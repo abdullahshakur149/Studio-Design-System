@@ -1,6 +1,3 @@
-// Supabase Send Email Hook receiver — Deno. Called by Supabase Auth system-to-system.
-// Configured in supabase/config.toml with verify_jwt = false.
-
 import { Webhook } from 'npm:standardwebhooks@1.0.0';
 import { handleCors, jsonResponse } from '../_shared/cors.ts';
 import { sendWelcomeVerify, sendPasswordReset } from '../_shared/email.ts';
@@ -40,18 +37,18 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const secret = Deno.env.get('SUPABASE_AUTH_HOOK_SECRET');
-    if (!secret) throw new ApiError(500, 'unknown', 'SUPABASE_AUTH_HOOK_SECRET not configured');
+    const secret = Deno.env.get('AUTH_HOOK_SECRET');
+    if (!secret) throw new ApiError(500, 'unknown', 'AUTH_HOOK_SECRET not configured');
 
-    // Supabase prefixes the secret with "v1,whsec_" — standardwebhooks expects bare base64
     const bareSecret = secret.startsWith('v1,whsec_') ? secret.slice('v1,whsec_'.length) : secret;
     const wh = new Webhook(bareSecret);
 
     const rawBody = await req.text();
-    const headers: Record<string, string> = {};
-    req.headers.forEach((value, key) => {
-      headers[key] = value;
-    });
+    const headers: Record<string, string> = {
+      'webhook-id': req.headers.get('webhook-id') ?? '',
+      'webhook-timestamp': req.headers.get('webhook-timestamp') ?? '',
+      'webhook-signature': req.headers.get('webhook-signature') ?? '',
+    };
 
     const payload = wh.verify(rawBody, headers) as EmailHookPayload;
     const { user, email_data } = payload;
@@ -68,7 +65,7 @@ Deno.serve(async (req) => {
 
     return jsonResponse({});
   } catch (err) {
-    console.error('email-hook error:', err);
+    console.error('auth-email-hook error:', err);
     return errorResponse(err);
   }
 });

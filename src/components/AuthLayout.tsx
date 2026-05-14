@@ -5,10 +5,12 @@ import { RequireVerifiedAuth } from '@/features/auth/RequireVerifiedAuth';
 export function AuthLayout(): JSX.Element {
   return (
     <RequireVerifiedAuth>
-      <Nav />
-      <main>
-        <Outlet />
-      </main>
+      <div className="app">
+        <Nav />
+        <main className="app-body">
+          <Outlet />
+        </main>
+      </div>
     </RequireVerifiedAuth>
   );
 }

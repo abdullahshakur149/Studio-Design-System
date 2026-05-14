@@ -5,7 +5,7 @@ export type LibraryFilter = 'all' | 'photo' | 'video';
 export type LibrarySort = 'newest' | 'oldest';
 
 const PAGE_SIZE = 12;
-const SIGNED_URL_TTL = 60 * 60; // 1 hour
+const SIGNED_URL_TTL = 60 * 60; 
 
 interface ListMediaParams {
   page: number;
@@ -82,7 +82,7 @@ async function toListItem(row: {
 export async function deleteMedia(item: MediaListItem): Promise<void> {
   const { error: storageError } = await supabase.storage.from(item.storageBucket).remove([item.storagePath]);
   if (storageError) {
-    // Don't block deletion of the row if storage object is already gone
+
     console.warn('Storage delete warning:', storageError.message);
   }
   const { error } = await supabase.from('media').delete().eq('id', item.id);

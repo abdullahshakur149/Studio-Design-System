@@ -7,13 +7,15 @@ import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { Textarea } from '@/components/ui/Input';
 import { ApiError } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 import {
   ACCEPTED_IMAGE_TYPES,
   MAX_IMAGE_SIZE_BYTES,
   type VideoFormValues,
 } from './schemas';
-import { VIDEO_STYLES, VIDEO_MOTIONS, type GenerateResponse } from '@/types/api';
+import { VIDEO_STYLES, VIDEO_MOTIONS, type GenerateVideoResponse } from '@/types/api';
 import { generateVideo, uploadSourceImage, type UploadedSource } from './api';
+import { composeKenBurnsVideo, imageFromBase64 } from './kenBurns';
 
 type UploadState =
   | { kind: 'empty' }
@@ -23,12 +25,65 @@ type UploadState =
 
 type ResultState =
   | { kind: 'idle' }
-  | { kind: 'loading'; progress: number; timedOut: boolean }
-  | { kind: 'done'; data: GenerateResponse }
+  | { kind: 'generating'; progress: number; phase: 'image' | 'composing'; timedOut: boolean }
+  | { kind: 'done'; videoUrl: string; mediaId: string }
   | { kind: 'error'; message: string; warming?: boolean };
 
 const PROGRESS_DURATION_MS = 30_000;
 const TIMEOUT_MS = 120_000;
+
+interface SaveResult {
+  mediaId: string;
+  signedUrl: string;
+}
+
+async function saveVideoToLibrary(
+  blob: Blob,
+  mimeType: string,
+  durationMs: number,
+  width: number,
+  height: number,
+  values: VideoFormValues,
+  generationLogId: string,
+): Promise<SaveResult> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  const ext = mimeType.startsWith('video/mp4') ? 'mp4' : 'webm';
+  const mediaId = crypto.randomUUID();
+  const storagePath = `${user.id}/${mediaId}.${ext}`;
+
+  const { error: upErr } = await supabase.storage
+    .from('media-videos')
+    .upload(storagePath, blob, { contentType: mimeType, upsert: false });
+  if (upErr) throw new Error(`Storage upload failed: ${upErr.message}`);
+
+  const { error: insertErr } = await supabase.from('media').insert({
+    id: mediaId,
+    user_id: user.id,
+    kind: 'video',
+    prompt: values.prompt,
+    style: values.style,
+    motion: values.motion,
+    source_image_path: values.sourceImagePath ?? null,
+    storage_path: storagePath,
+    storage_bucket: 'media-videos',
+    mime_type: mimeType,
+    size_bytes: blob.size,
+    width,
+    height,
+    duration_ms: durationMs,
+    generation_log_id: generationLogId,
+  });
+  if (insertErr) throw new Error(`Media insert failed: ${insertErr.message}`);
+
+  const { data: signed, error: signErr } = await supabase.storage
+    .from('media-videos')
+    .createSignedUrl(storagePath, 3600);
+  if (signErr || !signed) throw new Error('Could not sign URL for video');
+
+  return { mediaId, signedUrl: signed.signedUrl };
+}
 
 export function CreateVideoForm(): JSX.Element {
   const queryClient = useQueryClient();
@@ -61,14 +116,14 @@ export function CreateVideoForm(): JSX.Element {
 
   function startProgress(): void {
     const startedAt = Date.now();
-    setResult({ kind: 'loading', progress: 0, timedOut: false });
+    setResult({ kind: 'generating', progress: 0, phase: 'image', timedOut: false });
     progressTimerRef.current = window.setInterval(() => {
       const elapsed = Date.now() - startedAt;
-      const progress = Math.min(90, (elapsed / PROGRESS_DURATION_MS) * 90);
-      setResult((prev) => (prev.kind === 'loading' ? { ...prev, progress } : prev));
+      const progress = Math.min(75, (elapsed / PROGRESS_DURATION_MS) * 75);
+      setResult((prev) => (prev.kind === 'generating' ? { ...prev, progress } : prev));
     }, 250);
     timeoutTimerRef.current = window.setTimeout(() => {
-      setResult((prev) => (prev.kind === 'loading' ? { ...prev, timedOut: true } : prev));
+      setResult((prev) => (prev.kind === 'generating' ? { ...prev, timedOut: true } : prev));
     }, TIMEOUT_MS);
   }
 
@@ -84,11 +139,43 @@ export function CreateVideoForm(): JSX.Element {
   }
 
   const mutation = useMutation({
-    mutationFn: generateVideo,
+    mutationFn: async (values: VideoFormValues): Promise<{ videoUrl: string; mediaId: string }> => {
+
+      const imageResp: GenerateVideoResponse = await generateVideo(values);
+
+      setResult((prev) =>
+        prev.kind === 'generating' ? { ...prev, phase: 'composing', progress: 80 } : prev,
+      );
+
+      const img = await imageFromBase64(imageResp.sourceImageBase64, imageResp.sourceMimeType);
+      const composed = await composeKenBurnsVideo({
+        image: img,
+        motion: imageResp.motion,
+        durationMs: 8000,
+        onProgress: (p) => {
+          setResult((prev) =>
+            prev.kind === 'generating' ? { ...prev, progress: 80 + p * 15 } : prev,
+          );
+        },
+      });
+
+      setResult((prev) => (prev.kind === 'generating' ? { ...prev, progress: 96 } : prev));
+      const saved = await saveVideoToLibrary(
+        composed.blob,
+        composed.mimeType,
+        composed.durationMs,
+        composed.width,
+        composed.height,
+        values,
+        imageResp.generationLogId,
+      );
+
+      return { videoUrl: saved.signedUrl, mediaId: saved.mediaId };
+    },
     onMutate: () => startProgress(),
-    onSuccess: (data) => {
+    onSuccess: ({ videoUrl, mediaId }) => {
       clearProgress();
-      setResult({ kind: 'done', data });
+      setResult({ kind: 'done', videoUrl, mediaId });
       queryClient.invalidateQueries({ queryKey: ['library'] });
       queryClient.invalidateQueries({ queryKey: ['mediaCounts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
@@ -101,7 +188,7 @@ export function CreateVideoForm(): JSX.Element {
       let warming = false;
       if (err instanceof ApiError) {
         if (err.code === 'model_loading') {
-          message = 'The video model is warming up. Please try again in a minute or two.';
+          message = 'The model is warming up. Please try again in about a minute.';
           warming = true;
         } else if (err.code === 'rate_limited') {
           message = 'Too many requests right now. Please wait and retry.';
@@ -153,12 +240,13 @@ export function CreateVideoForm(): JSX.Element {
   async function handleDownload(): Promise<void> {
     if (result.kind !== 'done') return;
     try {
-      const res = await fetch(result.data.signedUrl);
+      const res = await fetch(result.videoUrl);
       const blob = await res.blob();
+      const ext = blob.type.startsWith('video/mp4') ? 'mp4' : 'webm';
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `studio-${result.data.mediaId}.mp4`;
+      a.download = `studio-${result.mediaId}.${ext}`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -295,11 +383,11 @@ export function CreateVideoForm(): JSX.Element {
         <Button
           type="submit"
           variant="primary"
-          leftIcon={result.kind === 'loading' ? null : <Sparkles size={16} />}
-          disabled={!isValid || result.kind === 'loading' || upload.kind === 'uploading'}
-          loading={result.kind === 'loading'}
+          leftIcon={result.kind === 'generating' ? null : <Sparkles size={16} />}
+          disabled={!isValid || result.kind === 'generating' || upload.kind === 'uploading'}
+          loading={result.kind === 'generating'}
         >
-          {result.kind === 'loading' ? 'Generating…' : 'Generate video'}
+          {result.kind === 'generating' ? 'Generating…' : 'Generate video'}
         </Button>
       </div>
 
@@ -311,7 +399,7 @@ export function CreateVideoForm(): JSX.Element {
               <div style={{ fontSize: 14 }}>Your generated video will appear here.</div>
             </div>
           )}
-          {result.kind === 'loading' && !result.timedOut && (
+          {result.kind === 'generating' && !result.timedOut && (
             <div
               style={{
                 width: '100%',
@@ -323,7 +411,9 @@ export function CreateVideoForm(): JSX.Element {
               }}
             >
               <div className="orb-anim" />
-              <div style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Generating your video…</div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
+                {result.phase === 'image' ? 'Generating your scene…' : 'Composing your video…'}
+              </div>
               <div style={{ width: '100%', maxWidth: 360 }}>
                 <div
                   style={{
@@ -334,7 +424,7 @@ export function CreateVideoForm(): JSX.Element {
                     color: 'var(--text-muted)',
                   }}
                 >
-                  <span>This usually takes 30–120 seconds.</span>
+                  <span>This usually takes 30–60 seconds.</span>
                   <span className="mono">{Math.round(result.progress)}%</span>
                 </div>
                 <div className="progress">
@@ -343,7 +433,7 @@ export function CreateVideoForm(): JSX.Element {
               </div>
             </div>
           )}
-          {result.kind === 'loading' && result.timedOut && (
+          {result.kind === 'generating' && result.timedOut && (
             <div className="result-placeholder" style={{ maxWidth: 380, textAlign: 'center' }}>
               <div
                 style={{
@@ -368,8 +458,10 @@ export function CreateVideoForm(): JSX.Element {
           )}
           {result.kind === 'done' && (
             <video
-              src={result.data.signedUrl}
+              src={result.videoUrl}
               controls
+              autoPlay
+              loop
               playsInline
               style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }}
             />
@@ -410,7 +502,7 @@ export function CreateVideoForm(): JSX.Element {
         {result.kind === 'done' && (
           <div className="result-actions">
             <Button type="button" variant="secondary" leftIcon={<Download size={14} />} onClick={handleDownload}>
-              Download MP4
+              Download
             </Button>
             <Button type="button" variant="secondary" leftIcon={<LibraryIcon size={14} />} disabled>
               Saved to library

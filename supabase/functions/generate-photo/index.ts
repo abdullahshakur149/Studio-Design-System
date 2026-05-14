@@ -1,5 +1,3 @@
-// Photo generation pipeline — runs on Deno (Supabase Edge Functions).
-
 import { z } from 'npm:zod@3.24.1';
 import { handleCors, jsonResponse } from '../_shared/cors.ts';
 import { adminClient, requireUser } from '../_shared/supabase.ts';
@@ -133,7 +131,6 @@ Deno.serve(async (req) => {
       .createSignedUrl(storagePath, 3600);
     if (signErr || !signed) throw new ApiError(500, 'unknown', 'Could not sign URL');
 
-    // Fire-and-forget first-creation email
     maybeSendFirstCreation(user.id, user.email).catch((err) => {
       console.warn('First-creation email failed:', err);
     });

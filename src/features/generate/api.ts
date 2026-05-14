@@ -1,13 +1,18 @@
 import { supabase } from '@/lib/supabase';
 import { callFunction } from '@/lib/api';
-import type { GeneratePhotoRequest, GenerateVideoRequest, GenerateResponse } from '@/types/api';
+import type {
+  GeneratePhotoRequest,
+  GenerateVideoRequest,
+  GenerateResponse,
+  GenerateVideoResponse,
+} from '@/types/api';
 
 export async function generatePhoto(input: GeneratePhotoRequest): Promise<GenerateResponse> {
   return callFunction<GenerateResponse>('generate-photo', { method: 'POST', body: input });
 }
 
-export async function generateVideo(input: GenerateVideoRequest): Promise<GenerateResponse> {
-  return callFunction<GenerateResponse>('generate-video', { method: 'POST', body: input });
+export async function generateVideo(input: GenerateVideoRequest): Promise<GenerateVideoResponse> {
+  return callFunction<GenerateVideoResponse>('generate-video', { method: 'POST', body: input });
 }
 
 export interface UploadedSource {

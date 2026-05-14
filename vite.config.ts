@@ -27,7 +27,7 @@ function checkEnv(mode: string): void {
       '\n❌ Studio cannot start — environment variables are missing or invalid:\n' +
       failures.join('\n') +
       '\n\nFix by copying .env.example to .env.local and filling in the required values.\n';
-    // Print AND throw so it's visible in the terminal and halts the dev server
+
     console.error(message);
     throw new Error('Invalid environment configuration');
   }

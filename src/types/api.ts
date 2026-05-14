@@ -37,6 +37,13 @@ export interface GenerateResponse {
   sizeBytes: number;
 }
 
+export interface GenerateVideoResponse {
+  sourceImageBase64: string;
+  sourceMimeType: string;
+  generationLogId: string;
+  motion: VideoMotion;
+}
+
 export type GenerationErrorCode =
   | 'model_loading'
   | 'rate_limited'

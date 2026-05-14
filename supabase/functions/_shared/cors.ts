@@ -1,6 +1,3 @@
-// CORS headers for browser → Edge Function calls.
-// Functions are called directly from the SPA in the browser.
-
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, webhook-id, webhook-timestamp, webhook-signature',

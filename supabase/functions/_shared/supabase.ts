@@ -1,8 +1,5 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.47.10';
 
-/**
- * Service-role admin client. Bypasses RLS. Auto-injected env vars.
- */
 export function adminClient(): SupabaseClient {
   const url = Deno.env.get('SUPABASE_URL');
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -14,10 +11,6 @@ export function adminClient(): SupabaseClient {
   });
 }
 
-/**
- * Validates the caller's JWT and returns their user info.
- * Throws if the Authorization header is missing or invalid.
- */
 export interface AuthedUser {
   id: string;
   email: string;

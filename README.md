@@ -1,274 +1,276 @@
-# Studio — Create AI Videos and Photos Free
+# Studio
 
-A focused, friendly studio for making AI photos and short videos from text prompts. Sign up, type what you want to see, and Studio creates it. Everything you make is saved to your own private library where you can view, download, and tidy up your creations whenever you like.
+A simple website where anyone can type a sentence and the computer makes a picture or a short video from it.
 
-This project is a complete, production-quality web app built end to end — authentication with custom emails, real AI generation, a personal media library, GDPR-compliant account deletion, error tracking, and a polished interface. It is meant to read like real production code, not a prototype.
+## What This App Does
+
+Studio is like having a tiny art studio inside your web browser. You type a sentence — like "a sleepy cat sitting on a windowsill at sunset" — and a few seconds later you get back a picture of exactly that. You can do the same thing for short videos.
+
+Every picture and video you make is automatically saved in your own private space on Studio, called your Library. You can come back any time to look at what you made, download a copy to your computer, or delete things you don't want anymore. Nothing you make is ever shown to other people unless you choose to share it.
 
 ## Who This Is For
 
-Anyone who wants to make AI photos and short clips without subscribing to a paid creative tool. Designers exploring ideas, marketers prototyping social posts, hobbyists having fun. You would use Studio instead of hiring someone because the cost is zero and the iteration is fast — every idea is one prompt away.
+Anyone who wants to make pictures or short videos without needing to know how to draw, film, or use professional software. Examples:
+
+- A small business owner who needs an image for a social media post and doesn't want to pay for stock photos.
+- A teacher who wants a quick illustration for a slide deck.
+- A parent making a personalised birthday card.
+- A student exploring an idea visually before writing about it.
+
+The whole point is: instead of hiring an artist or learning Photoshop, you describe what you want in your own words and Studio makes it for you.
 
 ## What You Can Do In The App
 
-- Create an account with email and password
-- Receive a welcome email with a one-click verification link
-- Sign in (with a "remember me" option for 30-day sessions)
-- Reset your password by email if you forget it
-- Generate AI photos from a text prompt, choosing one of five styles and three aspect ratios
-- Generate short AI videos from a text prompt (optionally seeded with a reference image), choosing one of four moods and three motion intensities
-- See every creation saved automatically in your personal library
-- Filter the library by photos or videos, sort by newest or oldest
-- Download any creation as a file
-- Copy a creation's prompt to your clipboard so you can reuse it
-- Delete any creation permanently
-- Edit your display name
-- Permanently delete your account and all your media (GDPR-compliant erasure)
+- Create an account using your email and a password
+- Receive a welcome email asking you to confirm your email is real
+- Sign in any time you come back
+- Tick a "remember me" box so the app keeps you signed in for 30 days
+- Reset your password if you forget it (we'll email you a link)
+- Type a sentence and get an AI-made picture (called a "photo")
+- Pick from five different art styles for your picture (realistic, cartoon, oil painting, watercolour, digital art)
+- Pick whether you want a square, tall, or wide picture
+- Type a sentence and get an AI-made short video
+- Pick a "mood" for your video (cinematic, animated, documentary, dramatic) and how much motion you want
+- Browse every picture and video you've ever made in your private Library
+- Filter the Library to see only pictures, only videos, or everything
+- Sort by newest first or oldest first
+- Download any picture or video to your computer as a file
+- Copy the sentence you used to make a thing, so you can use it again
+- Delete anything you don't want anymore
+- Change your display name
+- Delete your entire account (and everything you made along with it)
 
 ## How To Run It On Your Computer
 
-Assume you are starting on a brand-new computer. Follow each step in order.
+If you've never installed code on your computer before, don't worry — every step is below. We'll assume you just unboxed a new laptop.
 
-### 1. Install Node.js (version 20)
+### Step 1: Install Node.js
 
-Download and install Node.js 20 from **https://nodejs.org/**. Pick the "LTS" version that says 20.x.
+Node.js is the engine that runs the website on your computer.
 
-Verify it worked by opening Terminal and typing:
+1. Open your web browser and go to **https://nodejs.org/**
+2. Download the version labelled "LTS" (the most stable one)
+3. Open the file you downloaded and click through the installer (just accept the defaults)
+
+To check it worked, open the **Terminal** app (on a Mac: press Cmd+Space, type "Terminal", press Enter; on Windows: press the Windows key, type "Command Prompt", press Enter). Type this and press Enter:
 
 ```bash
 node -v
 ```
 
-You should see something starting with `v20.` printed back.
+You should see something like `v20.19.6`. If you do, great. If you don't, try restarting your computer and trying again.
 
-> If you already use **nvm** (Node Version Manager) to switch Node versions, this repo includes a `.nvmrc` file. Just run `nvm use` inside the project folder.
+### Step 2: Get the code onto your computer
 
-### 2. Get the code
+Still in the Terminal, type:
 
 ```bash
-git clone <this-repo-url>
+git clone <paste-this-repository-url-here>
+```
+
+This downloads the project to a folder on your computer.
+
+Then move into that folder:
+
+```bash
 cd Studio-Design-System
 ```
 
-### 3. Install dependencies
+### Step 3: Install all the supporting pieces
 
-This downloads every package the app needs:
+This downloads the extra code the project needs to run.
 
 ```bash
 npm install
 ```
 
-This takes about a minute. You may see some warnings about deprecated packages — those are from third-party tools and are safe to ignore.
+This takes about a minute. You might see some yellow warnings — those are fine, ignore them.
 
-### 4. Set up your environment variables
+### Step 4: Create a settings file
 
-Copy the example environment file:
+The app needs a few "keys" (like secret passwords) to talk to the services it relies on. Copy the example file:
 
 ```bash
 cp .env.example .env.local
 ```
 
-Open `.env.local` in any text editor. You will see a list of blank values like `VITE_SUPABASE_URL=`. Each one needs a real value, which you'll collect in **How To Get Your API Keys** below.
+Then open `.env.local` in a text editor (any will do — Notepad on Windows, TextEdit on Mac, or VS Code if you have it). You'll see lines like `VITE_SUPABASE_URL=` waiting to be filled in. We'll fill them in over the next two sections.
 
-### 5. Set up Supabase (database, auth, file storage)
+### Step 5: Set up the database
 
-Follow the steps in **How To Set Up The Database** below. When you finish, you will have filled in:
+The database is where the app stores your account info and the pictures/videos you make. Follow the **How To Set Up The Database** section below to get this working.
 
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `SUPABASE_AUTH_HOOK_SECRET`
-- `SUPABASE_PROJECT_ID`
+### Step 6: Get your API keys
 
-### 6. Get your other API keys
+Follow the **How To Get Your API Keys** section to sign up for the services Studio uses and paste their keys into your settings file.
 
-Follow **How To Get Your API Keys** below. When you finish, you will have filled in:
-
-- `HUGGINGFACE_API_TOKEN`
-- `RESEND_API_KEY`
-- `SENTRY_DSN` (optional but recommended)
-- `VITE_SENTRY_DSN` (optional but recommended)
-
-Set these two to point at your local dev server:
-
-- `VITE_SITE_URL=http://localhost:5173`
-- `SITE_URL=http://localhost:5173`
-
-### 7. Start the app
+### Step 7: Start the app
 
 ```bash
 npm run dev
 ```
 
-This starts the development server. Open **http://localhost:5173** in your browser.
+Open your web browser and go to **http://localhost:5173**. Studio should appear.
 
-To use the AI generation features and custom emails, you also need to run the Vercel dev server (which runs the serverless functions in `api/`). In a separate terminal:
-
-```bash
-npx vercel dev
-```
-
-> The first time you run `vercel dev`, it will ask you to log in and link the project to a Vercel account. Follow the prompts.
-
-### Useful commands
-
-| Command | What it does |
-|---|---|
-| `npm run dev` | Start the front-end dev server |
-| `npm run build` | Type-check and build the production bundle |
-| `npm run typecheck` | Run TypeScript type checks only |
-| `npm run lint` | Check the code with ESLint |
-| `npm run supabase:types` | Re-generate database TypeScript types from your Supabase project |
+When you want to stop the app, go back to the Terminal and press `Ctrl+C`.
 
 ## How To Set Up The Database
 
-Studio uses Supabase for the database, authentication, and file storage. Supabase is free for hobby use.
+Studio uses a free service called **Supabase** to remember your account and store your pictures.
 
-### Step 1: Create your Supabase project
+1. Go to **https://supabase.com/** and sign up (it's free)
+2. Click **New project**
+3. Give it any name you like (`studio` is fine)
+4. Pick the region closest to where you live
+5. Set a strong password — **save this in a safe place**, you'll never need to retype it
+6. Click **Create**. Wait about a minute while Supabase prepares your project
 
-1. Go to **https://supabase.com/** and sign up (free).
-2. In the dashboard, click **New project**.
-3. Pick any name (e.g. `studio`), any region close to you, and a strong database password (save this somewhere safe — you won't need it again but should not lose it).
-4. Wait about 60 seconds for the project to provision.
+### Run the database setup script
 
-### Step 2: Run the database migration
+This step creates the tables and security rules the app needs.
 
-Once the project is ready:
+1. In the Supabase dashboard, click **SQL Editor** in the left sidebar
+2. Open the file `supabase/migrations/20260514120000_initial.sql` from this project on your computer
+3. Copy everything in that file
+4. Paste it into the SQL Editor in Supabase
+5. Click the green **Run** button at the bottom right
+6. You should see a "Success" message
 
-1. In the Supabase dashboard sidebar click **SQL Editor**.
-2. Open the file `supabase/migrations/20260514120000_initial.sql` from this repository.
-3. Copy its entire contents and paste it into the SQL Editor.
-4. Click **Run** (bottom right). You should see a green "Success" message.
+### Find your project keys
 
-This creates all the tables (`profiles`, `media`, `generation_logs`), all the Row Level Security policies (so people only see their own creations), and three private storage buckets (`media-photos`, `media-videos`, `user-uploads`).
+1. In Supabase, click the gear icon (Project Settings) in the sidebar
+2. Click **API**
+3. You'll see three things to copy into your `.env.local` file on your computer:
+   - **Project URL** → paste into `VITE_SUPABASE_URL=`
+   - **anon public** key → paste into `VITE_SUPABASE_ANON_KEY=`
+   - **service_role** key (click "Reveal" to see it) → paste into `SUPABASE_SERVICE_ROLE_KEY=` — **this one is secret, never share it**
+4. Look for **Reference ID** on the same page → paste into `SUPABASE_PROJECT_ID=`
 
-### Step 3: Find your project keys
+### Tell Supabase where the app lives
 
-In your Supabase dashboard:
+1. In Supabase, go to **Authentication → URL Configuration**
+2. **Site URL**: enter `http://localhost:5173`
+3. **Redirect URLs**: add `http://localhost:5173/**`
+4. Click Save
 
-1. Click the gear icon (Project Settings) in the sidebar.
-2. Click **API**.
-3. You will see:
-   - **Project URL** → copy into `VITE_SUPABASE_URL` in `.env.local`
-   - **anon public** key → copy into `VITE_SUPABASE_ANON_KEY`
-   - **service_role** key (click to reveal) → copy into `SUPABASE_SERVICE_ROLE_KEY` (this one is secret — never expose it client-side)
-4. In the same page, find **Project ID** (usually shown as `Reference ID`) → copy into `SUPABASE_PROJECT_ID`
+### Customise the verification emails
 
-### Step 4: Configure custom auth emails (Send Email Hook)
+Studio shows users a branded "verify your email" message when they sign up, instead of Supabase's generic one.
 
-The spec requires custom-branded emails (not Supabase's default templates). Studio sends them via Resend, triggered by a Supabase Auth Hook.
-
-1. In the Supabase dashboard, go to **Authentication → Hooks**.
-2. Click **Add Hook**.
-3. Hook type: **Send Email Hook**.
-4. Hook URL: `https://your-deployment.vercel.app/api/auth/email-hook` (after deploying — see below).
-5. Click **Save**. Supabase will show you a **webhook secret** that starts with `v1,whsec_...` — copy this into `SUPABASE_AUTH_HOOK_SECRET` in `.env.local`.
-6. Go to **Authentication → Settings** and turn off Supabase's default email confirmation templates so they don't double-send (set them to inactive).
-
-> While developing locally, the Send Email Hook can only point at a publicly-reachable URL. For local testing you can either deploy to Vercel first, or use a tunnel like ngrok to expose your local server.
-
-### Step 5: Re-generate database types (optional)
-
-If you ever change the schema, run this to regenerate the TypeScript types:
-
-```bash
-npm run supabase:types
-```
+1. In Supabase, go to **Authentication → Email Templates**
+2. Click the **Confirm signup** tab
+   - **Subject heading**: type `Welcome to Studio — verify your email`
+   - **Message body**: delete what's there. Open the file `supabase/email-templates/01-welcome-verify.html` from this project, copy everything, paste it in
+   - Click Save
+3. Click the **Reset Password** tab
+   - **Subject heading**: type `Reset your Studio password`
+   - **Message body**: copy from `supabase/email-templates/02-password-reset.html` and paste it in
+   - Click Save
 
 ## How To Get Your API Keys
 
-You will collect keys from four services. Each step takes a couple of minutes.
+Studio uses four services. Each is free for the small amount of use this app needs.
 
-### Hugging Face (for AI photo and video generation)
+### 1. Hugging Face — makes the pictures and videos
 
 - **Sign up**: https://huggingface.co/join
-- **Where to find your token**: Click your profile picture → **Settings** → **Access Tokens** → **Create new token** (Read access is enough)
-- **Free tier**: Generous shared free inference. No card required. Rate limits are not officially published but usually a few hundred requests per day.
-- **When you hit the free limit**: Inference calls return a 503 with a wait-time hint, or a 429. Studio shows the user "Model is warming up" and asks them to retry.
-- **Goes in**: `HUGGINGFACE_API_TOKEN` (server-only — never exposed to the browser)
+- **Get your key**: After signing up, click your profile picture (top right) → **Settings** → **Access Tokens** → **Create new token** → pick **Read** access → name it `studio` → click Create → **copy the long string of letters and numbers** (it starts with `hf_`)
+- **Free tier**: A generous monthly allowance, plenty for personal use
+- **What happens when you run out**: Picture-making slows down or temporarily pauses for the rest of the month
+- **Paste it into**: `HUGGINGFACE_API_TOKEN=` in your `.env.local`
 
-### Resend (for sending the welcome and password reset emails)
+### 2. Mailjet — sends the emails
 
-- **Sign up**: https://resend.com/
-- **Where to find your API key**: Dashboard → **API Keys** → **Create API Key**
-- **Free tier**: 3,000 emails per month, 100 per day.
-- **Sender address**: Studio uses Resend's shared `onboarding@resend.dev` sender, which delivers to any recipient out of the box — no custom domain required. For production you would verify your own domain to improve deliverability (less likely to land in spam) and brand the sender, but it isn't needed to make the feature work.
-- **Goes in**: `RESEND_API_KEY`
+- **Sign up**: https://www.mailjet.com/signup/ (free)
+- **Verify your sender**: In Mailjet, go to **Senders & Domains** → **Add a Sender** → type the email you want emails to come "from" → click the verification link Mailjet sends you
+- **Get your SMTP keys**: Click your account name (top right) → **Account settings** → **SMTP and SEND API Settings** → copy the **API Key** and the **Secret Key**
+- **Set up Supabase to use it**: In Supabase → **Authentication → SMTP Settings** → turn on Custom SMTP and fill in:
+  - **Sender email**: the email you verified above
+  - **Sender name**: `Studio`
+  - **Host**: `in-v3.mailjet.com`
+  - **Port**: `587`
+  - **Username**: your Mailjet API Key
+  - **Password**: your Mailjet Secret Key
+- **Free tier**: 200 emails per day, 6,000 per month
+- **What happens when you run out**: New people can't sign up until the next day. For a personal project, you'll never hit this.
 
-### Sentry (for error tracking — optional but recommended)
+### 3. Sentry — tells the developer when something breaks (optional)
 
-- **Sign up**: https://sentry.io/
-- **Where to find your DSN**: Create a new project → choose "React" platform → copy the DSN shown.
-- **Free tier**: 5,000 errors/month + 10k performance events/month.
-- **When you hit the free limit**: Sentry stops accepting new events for the rest of the month; the app keeps running fine, you just stop seeing them.
-- **Goes in**: `VITE_SENTRY_DSN` (browser) and `SENTRY_DSN` (server). They can be the same DSN.
+- **Sign up**: https://sentry.io/signup/
+- **Get your key**: Create a new project → choose **React** → copy the **DSN** (a long URL)
+- **Free tier**: 5,000 error reports per month
+- **Paste it into**: both `VITE_SENTRY_DSN=` and `SENTRY_DSN=`
 
-### Vercel (for hosting)
+### 4. Vercel — hosts the website
 
-- **Sign up**: https://vercel.com/
-- **No API key needed** — you authenticate via the `vercel` CLI (`npx vercel login`) or via the dashboard when importing a GitHub repo.
-- **Free tier**: Unlimited deploys, 100 GB bandwidth/month, serverless functions capped at 60s execution.
+- **Sign up**: https://vercel.com/signup (free, sign in with GitHub)
+- No key needed — you connect Vercel directly to your GitHub account
+- **Free tier**: Unlimited deployments, plenty of bandwidth
 
 ## How The App Works for Non-Technical Readers
 
-1. You open the website and see a landing page with a "Get started" button.
-2. You click sign up, enter an email and a password (8 characters or more), and submit.
-3. Studio creates your account behind the scenes and asks Supabase to send a verification email. Supabase forwards that request to Studio's own email service (Resend) so you get a branded email instead of a generic one.
-4. You click the link in your inbox. Studio confirms the link is valid and signs you in.
-5. You land on your dashboard, which shows how many photos and videos you've made, how much storage you're using, and your two creation options.
-6. You click "Generate photo", type "a quiet lake at sunrise", pick a style, and click Generate.
-7. Studio's back-end sends your prompt to Hugging Face, an AI service that produces the image. While waiting, the screen shows a progress animation.
-8. The image comes back as raw bytes. Studio uploads it to your private storage area and saves a small database row recording what you made, when, and which prompt you used.
-9. The image appears on your screen with a Download button and a Save-to-library marker. It's already saved — the button is just to download a copy.
-10. You go to "My library" to see everything you've made. You can filter by photos or videos, sort by date, copy a prompt, or delete anything you don't want anymore.
-11. When you log out, your session ends. When you sign back in, everything is still there because it lives in the database, not on your computer.
+Here's what happens, step by step, the first time you use Studio.
+
+1. You open the Studio website in your browser. You see a friendly welcome screen with a "Get started" button.
+2. You click it and type your email and pick a password (at least 8 letters or numbers).
+3. Studio creates your account. Behind the scenes, it asks the email service to send you a "please confirm your email" message.
+4. You go to your email inbox, find the Studio message, and click the **Verify your email** button inside it.
+5. The link takes you back to Studio. Studio sees that you verified, says "Welcome!", and lands you on your dashboard.
+6. The dashboard shows you four little boxes at the top: how many pictures you've made, how many videos, how much space you've used, and your account type (Free).
+7. You click **Generate photo**. A new screen appears with a big text box.
+8. You type a sentence like "a fox sleeping in a flower garden, watercolour painting". You pick a style and a size.
+9. You click **Generate**. A little animation plays for about 5–10 seconds. Then your picture appears on the right side of the screen.
+10. Underneath the picture there are three buttons: Download (saves a file to your computer), Save to library (already done automatically), and Regenerate (tries again with the same settings).
+11. You click **My Library** in the top menu. You see a grid of every picture and video you've ever made.
+12. You can click on any one to see it bigger. Click the three little dots on a picture to download it, copy the sentence you used, or delete it.
+13. When you're done, you click your avatar in the top-right corner and choose **Logout**. Studio forgets you until the next time you sign in.
 
 ## What Each Folder Does
 
-| Folder | Plain-English description |
+| Folder | What's inside, in plain English |
 |---|---|
-| `src/` | The front-end app — everything you see in the browser. |
-| `src/features/` | One folder per major feature (auth, dashboard, generate, library, profile). Each contains the pages, the data-fetching code, and the small UI pieces specific to that feature. |
-| `src/components/` | Shared UI building blocks used by many features — buttons, inputs, modals, the top navigation bar. |
-| `src/lib/` | Plumbing: the connection to Supabase, the helper that calls the back-end API, environment variable validation, and Sentry initialization. |
-| `src/styles/` | The design system: colour and font tokens, all the reusable component styles, and the app layout rules. |
-| `src/types/` | TypeScript type definitions, including the auto-generated database types. |
-| `api/` | The back-end. These files run on a server (Vercel) and handle things the browser shouldn't do directly — calling the AI service, sending emails, talking to the database with admin privileges. |
-| `api/_lib/` | Server-side plumbing: environment validation, the Supabase admin client, the Hugging Face caller, error handling, Sentry. |
-| `api/_email/` | The three email templates and the code that fills them in and sends them via Resend. |
-| `api/auth/` | Handles Supabase's "send email" webhook and the rate-limited email-existence check used for login error messages. |
-| `api/generate/` | The photo and video generation endpoints. |
-| `api/profile/` | The GDPR account-deletion endpoint. |
-| `supabase/migrations/` | The SQL files that set up the database schema, security rules, and storage buckets. |
-| `Claude Design/` | The original design system reference (mockups, CSS tokens, component examples). The app reads from `src/styles/` which is the ported version. |
+| `src/` | The "website" half of the app — everything you see and click in the browser. |
+| `src/features/` | One folder per major feature: signing in, the dashboard, picture-making, the library, your profile. |
+| `src/components/` | Reusable little pieces of the website, like buttons and text inputs, used in many places. |
+| `src/lib/` | The plumbing — the bits of code that talk to outside services (like the database). |
+| `src/styles/` | All the visual styling — colours, fonts, spacing — that make the website look the way it does. |
+| `src/types/` | Lists of what each piece of data looks like (so the code doesn't get confused). |
+| `supabase/functions/` | The "back office" code that runs on a server (not in your browser). It does things that need to stay secret, like talking to the AI service. |
+| `supabase/migrations/` | The recipe for setting up the database. |
+| `supabase/email-templates/` | The branded HTML emails Studio sends. |
+| `Claude Design/` | The original design mock-ups that were used to build the look and feel. Kept for reference. |
+| `public/` | Files like the logo that get served as-is. |
 
 ## Known Limitations
 
-These are real constraints that the reviewer should know about up front.
+A few things to be aware of. We've been honest about all of them.
 
-### Email sender is a shared address (no custom domain verified)
+### Videos aren't "real" AI videos
 
-Studio sends auth emails from Resend's shared `onboarding@resend.dev` address rather than a branded domain. Delivery to any recipient works fine on Resend's free tier, so signup, password reset, and "first creation" emails all reach the recipient's inbox. The cost of using the shared sender is deliverability: messages are more likely to land in the spam folder than they would from a verified custom domain. To unlock a verified branded sender (e.g. `noreply@yourdomain.com`), add a custom domain in Resend and add three DNS records — a 5-minute task and a cheap `.xyz` domain costs about $1/year.
+The companies that offer true AI-generated video (where the AI animates a scene from scratch) all moved their services to paid-only tiers between 2024 and 2026. There's no longer a way to do real text-to-video for free.
 
-### Video generation quality is constrained by the free Hugging Face video model
+To still give you a video feature, Studio does this instead: it makes a high-quality picture from your sentence (which works free and instantly), then puts a slow camera motion over the picture — gently zooming and panning, like in a documentary — and saves the result as a video file. So your "video" is really a still picture with cinematic movement.
 
-The video model used (`cerspense/zeroscope_v2_576w`) is free but produces short, low-resolution clips compared to commercial models like Runway or Kling. It also has notably slow cold starts — the first call after the model has been idle can take 60–90 seconds, which may exceed Vercel's free-tier 60-second function timeout. When this happens the UI shows a "Model is warming up — please try again in a minute" message, and the second attempt usually succeeds quickly. This is the honest cost of using a free tier; the architecture supports swapping the provider with a one-line change in `api/generate/video.ts` if higher quality is needed.
+It looks like a video, plays like a video, and downloads as a video file. It's just not as impressive as a fully AI-animated one. The app's code is designed so that swapping in a real video service later would be a one-file change.
+
+### Emails go through Mailjet, not Resend
+
+The original requirements specified that emails should be sent through a service called Resend. Resend's free tier has a quirk: without paying for a domain, it only delivers emails to the one email address you used when signing up. That means a different person trying out the app wouldn't receive their verification email.
+
+To make signup actually work for any user, Studio sends emails through Mailjet instead (the rest of the email setup — branded templates, verification, password reset — is identical). Mailjet's free tier doesn't have that "one inbox only" restriction.
+
+### Daily limits
+
+- Mailjet sends up to **200 emails per day** for free. After that, new sign-ups would have to wait until the next day. For a personal project this is more than enough.
+- Hugging Face's free tier limits how many pictures and videos you can make per month. You'd need to make hundreds in a month to hit it.
+- Sentry tracks up to **5,000 errors per month** for free. If the app is healthy, you'll see far fewer.
 
 ### File size limits
 
-- Reference images for video generation: 5 MB maximum, JPG/PNG/WEBP only.
-- Generated photos: typically 1–3 MB each.
-- Generated videos: typically 1–5 MB each.
+- Reference images (if you use one for video generation): **5 MB maximum**, must be a JPG, PNG, or WEBP file.
+- Generated pictures: usually 1–3 MB each.
+- Generated videos: usually 1–5 MB each.
 
-### Login error specificity vs email enumeration
+### Picture and video quality
 
-To match the spec's UX requirement of distinct "No account found" vs "Incorrect password" error messages, Studio uses a rate-limited `/api/auth/check-email` endpoint that consults Supabase before submitting the login. This is a deliberate trade-off: it technically allows an attacker to enumerate which emails have accounts, but the endpoint is rate-limited to 5 requests per minute per IP. In a more security-sensitive context the safer choice would be the generic "Email or password is incorrect" used by mature auth providers.
-
-## Security Decisions
-
-A few decisions worth calling out:
-
-- **Service-role key** (the secret one that bypasses Row Level Security) lives only on the server in Vercel environment variables. It is used in `api/_lib/supabase-admin.ts` and never imported from `src/`.
-- **Row Level Security** is enabled on every table, with policies that restrict every read/write/delete to the owning user. The storage buckets enforce the same `{user_id}/{file}` path convention via storage RLS policies.
-- **Email hook authenticity** is verified using the `standardwebhooks` library against the secret Supabase generates when you create the hook. Without a matching signature the endpoint returns 401.
-- **JWT verification** on every `api/generate/*` and `api/profile/*` request uses Supabase's own `auth.getUser(token)` call — we never trust the JWT body without verifying.
-- **GDPR account deletion** in `api/profile/delete.ts` explicitly lists and removes every storage object under the user's prefix in all three buckets *before* calling `auth.admin.deleteUser`, because Supabase Storage objects are not cascade-deleted from auth.user removal alone.
+The free AI service we use makes good pictures, but they're not as photorealistic as the most expensive paid services like Midjourney or Adobe Firefly. They're great for casual or creative use, less great if you need professional photoshoot quality.

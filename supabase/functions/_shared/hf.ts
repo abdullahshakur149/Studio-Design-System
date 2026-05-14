@@ -12,15 +12,11 @@ interface HfResult {
   mimeType: string;
 }
 
-/**
- * Calls Hugging Face Inference API and returns binary bytes.
- * Retries once on 503 "model loading" if retryOnLoading is true.
- */
 export async function callHfModel({ model, body, budgetMs, retryOnLoading }: HfCallOptions): Promise<HfResult> {
   const token = Deno.env.get('HUGGINGFACE_API_TOKEN');
   if (!token) throw new ApiError(500, 'unknown', 'HUGGINGFACE_API_TOKEN not set');
 
-  const url = `https://api-inference.huggingface.co/models/${model}`;
+  const url = `https://router.huggingface.co/hf-inference/models/${model}`;
   const startedAt = Date.now();
 
   async function attempt(): Promise<HfResult> {
@@ -29,7 +25,7 @@ export async function callHfModel({ model, body, budgetMs, retryOnLoading }: HfC
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        Accept: 'image/png,video/mp4,application/json',
+
       },
       body: JSON.stringify(body),
     });
@@ -49,7 +45,7 @@ export async function callHfModel({ model, body, budgetMs, retryOnLoading }: HfC
           if (typeof t === 'number') estimated = Math.ceil(t);
         }
       } catch {
-        // ignore
+
       }
       throw new ApiError(503, 'model_loading', 'Model is currently loading', { estimatedSeconds: estimated });
     }

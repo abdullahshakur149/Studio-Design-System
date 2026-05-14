@@ -30,7 +30,7 @@ export function VerifyCallbackPage(): JSX.Element {
       }
 
       if (!tokenHash || !type) {
-        // Supabase may have already exchanged the URL fragment for a session
+
         const { data } = await supabase.auth.getSession();
         if (data.session) {
           if (active) {

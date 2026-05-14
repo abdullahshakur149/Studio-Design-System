@@ -45,11 +45,9 @@ export class LoginError extends Error {
 }
 
 export async function login(input: LoginInput): Promise<void> {
-  // Flag for storage adapter — set before signIn so refresh tokens go to the right place
+
   setRememberMe(input.remember);
 
-  // Pre-flight: distinct error messages per spec require checking existence first.
-  // Rate-limited server-side; documented security trade-off in README.
   let emailExists = false;
   try {
     emailExists = await checkEmailExists(input.email);
@@ -57,7 +55,7 @@ export async function login(input: LoginInput): Promise<void> {
     if (err instanceof ApiError && err.status === 429) {
       throw new LoginError('form', 'Too many attempts. Please wait a moment and try again.');
     }
-    // If the check endpoint is unavailable, fall through to the generic Supabase error.
+
   }
 
   if (!emailExists) {

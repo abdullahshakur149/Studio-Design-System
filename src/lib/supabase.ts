@@ -4,11 +4,6 @@ import type { Database } from '@/types/database';
 
 const REMEMBER_KEY = 'studio.remember';
 
-/**
- * Routes Supabase session storage between localStorage (remember-me checked)
- * and sessionStorage (unchecked = session dies when tab closes).
- * The flag is set by the login handler before signInWithPassword.
- */
 const rememberAwareStorage: SupportedStorage = {
   getItem: (key) => {
     const remember = localStorage.getItem(REMEMBER_KEY) === '1';

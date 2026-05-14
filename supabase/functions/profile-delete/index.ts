@@ -1,6 +1,3 @@
-// GDPR-compliant account deletion: removes all storage objects under
-// {user_id}/ in three buckets, then deletes the auth.user (cascades rows).
-
 import { handleCors, jsonResponse } from '../_shared/cors.ts';
 import { adminClient, requireUser } from '../_shared/supabase.ts';
 import { ApiError, errorResponse } from '../_shared/errors.ts';
@@ -19,7 +16,6 @@ Deno.serve(async (req) => {
     const user = await requireUser(req);
     const admin = adminClient();
 
-    // 1. Remove all storage objects under {user_id}/ in every bucket
     for (const bucket of BUCKETS) {
       const { data: objects, error: listErr } = await admin.storage.from(bucket).list(user.id, {
         limit: 1000,
@@ -34,7 +30,6 @@ Deno.serve(async (req) => {
       if (removeErr) console.warn(`remove ${bucket} failed:`, removeErr.message);
     }
 
-    // 2. Delete the auth user — cascades profiles, media, generation_logs via FK on delete cascade
     const { error: deleteErr } = await admin.auth.admin.deleteUser(user.id);
     if (deleteErr) throw new ApiError(500, 'unknown', `Could not delete user: ${deleteErr.message}`);
 

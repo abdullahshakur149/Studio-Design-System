@@ -1,7 +1,3 @@
-/* ============================================================
-   STUDIO UI KIT — App-specific styles
-   ============================================================ */
-
 * { box-sizing: border-box; }
 
 body {
@@ -15,12 +11,10 @@ body {
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; }
 
-/* ---------- LAYOUT ---------- */
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 .app-body { flex: 1; padding: 32px 24px 64px; }
 .container { max-width: 1200px; margin: 0 auto; width: 100%; }
 
-/* ---------- NAV ---------- */
 .nav {
   position: sticky; top: 0; z-index: 30;
   height: 56px;
@@ -69,7 +63,7 @@ button { font-family: inherit; }
 }
 .nav-avatar:hover { background: #1F1F23; border-color: #3A3A40; }
 .nav-menu {
-  position: absolute; top: 48px; right: 0;
+
   background: var(--surface-elevated);
   border: 1px solid var(--border-strong);
   border-radius: var(--r-lg);
@@ -77,6 +71,7 @@ button { font-family: inherit; }
   min-width: 200px;
   padding: 6px;
   overflow: hidden;
+  z-index: 50;
 }
 .nav-menu-header { padding: 10px 12px 12px; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
 .nav-menu-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
@@ -95,7 +90,6 @@ button { font-family: inherit; }
 .nav-menu-item.danger:hover { background: rgba(248, 113, 113, 0.1); }
 .nav-menu-divider { height: 1px; background: var(--border); margin: 6px 0; }
 
-/* ---------- AUTH ---------- */
 .auth-page {
   min-height: 100vh;
   display: flex; align-items: center; justify-content: center;
@@ -120,7 +114,6 @@ button { font-family: inherit; }
 .auth-row a { color: var(--text-secondary); }
 .auth-row a:hover { color: var(--accent); }
 
-/* ---------- LANDING ---------- */
 .landing { min-height: 100vh; }
 .landing-nav { padding: 18px 24px; display: flex; align-items: center; max-width: 1200px; margin: 0 auto; }
 .landing-nav-actions { margin-left: auto; display: flex; gap: 8px; }
@@ -179,7 +172,6 @@ button { font-family: inherit; }
   position: relative;
 }
 
-/* ---------- DASHBOARD ---------- */
 .page-head { display: flex; align-items: end; justify-content: space-between; margin-bottom: 28px; }
 .page-h { font-size: 28px; font-weight: 600; letter-spacing: -0.015em; margin: 0; }
 .page-sub { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0; }
@@ -229,7 +221,6 @@ button { font-family: inherit; }
 
 .recent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 
-/* ---------- MEDIA CARD ---------- */
 .media-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -279,7 +270,6 @@ button { font-family: inherit; }
 .icon-btn:hover { background: var(--surface-elevated); color: var(--text-primary); }
 .icon-btn svg { width: 16px; height: 16px; }
 
-/* ---------- EMPTY ---------- */
 .empty {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 64px 24px;
@@ -292,7 +282,6 @@ button { font-family: inherit; }
 .empty-title { font-size: 17px; font-weight: 600; margin: 0 0 6px; }
 .empty-text { font-size: 14px; color: var(--text-secondary); margin: 0 0 24px; max-width: 320px; }
 
-/* ---------- CREATE PAGE ---------- */
 .create-page { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; align-items: start; }
 .create-controls { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
 .create-tabs { display: inline-flex; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 3px; gap: 2px; margin-bottom: 24px; }
@@ -412,7 +401,6 @@ button { font-family: inherit; }
   50% { opacity: 1; transform: scale(1.06); }
 }
 
-/* ---------- LIBRARY ---------- */
 .library-filters { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 12px; flex-wrap: wrap; }
 .lib-tabs { display: inline-flex; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 3px; gap: 2px; }
 .lib-tab { padding: 7px 14px; font-size: 13px; color: var(--text-secondary); border-radius: 6px; cursor: pointer; border: none; background: transparent; display: inline-flex; align-items: center; gap: 6px; transition: all var(--dur-fast) var(--ease-out); }
@@ -423,15 +411,14 @@ button { font-family: inherit; }
 
 .lib-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
-/* dropdown menu used in media card */
 .menu-pop {
-  position: absolute; top: 32px; right: 0; z-index: 10;
   background: var(--surface-elevated);
   border: 1px solid var(--border-strong);
   border-radius: var(--r-md);
   box-shadow: var(--shadow-modal);
   min-width: 160px;
   padding: 4px;
+  z-index: 50;
 }
 .menu-item {
   display: flex; align-items: center; gap: 10px;
@@ -446,7 +433,6 @@ button { font-family: inherit; }
 .menu-item.danger { color: var(--error); }
 .menu-item.danger:hover { background: rgba(248, 113, 113, 0.1); }
 
-/* ---------- PROFILE ---------- */
 .profile-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 24px; margin-bottom: 16px; }
 .profile-section h3 { margin: 0 0 4px; font-size: 16px; font-weight: 600; }
 .profile-section .desc { color: var(--text-secondary); font-size: 13px; margin: 0 0 20px; }
@@ -457,27 +443,23 @@ button { font-family: inherit; }
 .danger-zone { border-color: rgba(248, 113, 113, 0.25); }
 .danger-zone .danger-title { color: var(--error); }
 
-/* ---------- TOAST CONTAINER ---------- */
 .toast-stack {
   position: fixed; bottom: 24px; right: 24px;
   display: flex; flex-direction: column; gap: 10px;
   z-index: 200;
 }
 
-/* ---------- TOAST entry anim ---------- */
 @keyframes toast-in {
   from { transform: translateY(8px); opacity: 0; }
   to   { transform: translateY(0); opacity: 1; }
 }
 .toast { animation: toast-in var(--dur-slow) var(--ease-out); }
 
-/* ---------- ASPECT placeholder gradients (for mock generated media) ---------- */
 .gen-art {
   width: 100%; height: 100%;
   display: block;
 }
 
-/* ---------- RESPONSIVE ---------- */
 @media (max-width: 920px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .create-grid { grid-template-columns: 1fr; }
@@ -498,7 +480,6 @@ button { font-family: inherit; }
   .lib-grid { grid-template-columns: 1fr; }
 }
 
-/* Button resets — when .choice / .ratio / .dropzone are used as <button> */
 button.choice, button.ratio, button.dropzone {
   font-family: inherit;
   width: 100%;

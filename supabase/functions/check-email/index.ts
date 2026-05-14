@@ -1,13 +1,8 @@
-// Rate-limited email-existence check used by login to distinguish
-// "no account" from "wrong password" errors.
-
 import { z } from 'npm:zod@3.24.1';
 import { handleCors, jsonResponse } from '../_shared/cors.ts';
 import { adminClient } from '../_shared/supabase.ts';
 import { ApiError, errorResponse } from '../_shared/errors.ts';
 
-// In-memory rate limit. Edge function instances are short-lived;
-// this is best-effort throttling, not durable.
 const RATE_LIMIT = 5;
 const WINDOW_MS = 60_000;
 const buckets = new Map<string, { count: number; resetAt: number }>();
@@ -46,9 +41,12 @@ Deno.serve(async (req) => {
       throw new ApiError(400, 'invalid_input', 'Invalid email');
     }
 
-    const ip = getClientIp(req);
-    if (isRateLimited(ip)) {
-      throw new ApiError(429, 'rate_limited', 'Too many requests');
+    const isDev = (Deno.env.get('SITE_URL') ?? '').includes('localhost');
+    if (!isDev) {
+      const ip = getClientIp(req);
+      if (isRateLimited(ip)) {
+        throw new ApiError(429, 'rate_limited', 'Too many requests');
+      }
     }
 
     const { data, error } = await adminClient().auth.admin.listUsers();

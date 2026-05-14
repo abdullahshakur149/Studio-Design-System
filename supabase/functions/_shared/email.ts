@@ -1,24 +1,4 @@
-// Resend integration + template loading. Uses Resend's REST API directly via fetch
-// rather than the npm SDK to keep the Deno bundle minimal and avoid SDK quirks.
-
-const TEMPLATE_NAMES = [
-  '01-welcome-verify.html',
-  '02-password-reset.html',
-  '03-first-creation.html',
-] as const;
-
-type TemplateName = (typeof TEMPLATE_NAMES)[number];
-
-const templateCache = new Map<TemplateName, string>();
-
-async function loadTemplate(name: TemplateName): Promise<string> {
-  const cached = templateCache.get(name);
-  if (cached) return cached;
-  const url = new URL(`./templates/${name}`, import.meta.url);
-  const html = await Deno.readTextFile(url);
-  templateCache.set(name, html);
-  return html;
-}
+import { welcomeVerifyHtml, passwordResetHtml, firstCreationHtml } from './templates.ts';
 
 export function renderTemplate(html: string, vars: Record<string, string>): string {
   return html.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? '');
@@ -57,20 +37,17 @@ function siteUrl(): string {
 }
 
 export async function sendWelcomeVerify(to: string, verifyUrl: string): Promise<void> {
-  const tpl = await loadTemplate('01-welcome-verify.html');
-  const html = renderTemplate(tpl, { verify_url: verifyUrl, site_url: siteUrl() });
+  const html = renderTemplate(welcomeVerifyHtml, { verify_url: verifyUrl, site_url: siteUrl() });
   await sendViaResend({ to, subject: 'Welcome to Studio — verify your email', html });
 }
 
 export async function sendPasswordReset(to: string, resetUrl: string): Promise<void> {
-  const tpl = await loadTemplate('02-password-reset.html');
-  const html = renderTemplate(tpl, { reset_url: resetUrl, site_url: siteUrl() });
+  const html = renderTemplate(passwordResetHtml, { reset_url: resetUrl, site_url: siteUrl() });
   await sendViaResend({ to, subject: 'Reset your Studio password', html });
 }
 
 export async function sendFirstCreation(to: string, displayName: string): Promise<void> {
-  const tpl = await loadTemplate('03-first-creation.html');
-  const html = renderTemplate(tpl, {
+  const html = renderTemplate(firstCreationHtml, {
     library_url: `${siteUrl()}/dashboard/library`,
     site_url: siteUrl(),
     display_name: displayName,
