@@ -3,7 +3,6 @@ import { handleCors, jsonResponse } from '../_shared/cors.ts';
 import { adminClient, requireUser } from '../_shared/supabase.ts';
 import { callHfModel } from '../_shared/hf.ts';
 import { ApiError, errorResponse } from '../_shared/errors.ts';
-import { sendFirstCreation } from '../_shared/email.ts';
 
 const PHOTO_STYLES = ['Realistic', 'Cartoon', 'Oil Painting', 'Watercolour', 'Digital Art'] as const;
 const PHOTO_ASPECTS = ['1:1', '4:5', '16:9'] as const;
@@ -35,6 +34,14 @@ function aspectToDims(aspect: (typeof PHOTO_ASPECTS)[number]): { width: number; 
   }
 }
 
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]!);
+  }
+  return btoa(binary);
+}
+
 Deno.serve(async (req) => {
   const cors = handleCors(req);
   if (cors) return cors;
@@ -49,9 +56,7 @@ Deno.serve(async (req) => {
 
   try {
     const user = await requireUser(req);
-    if (!user.emailConfirmed) {
-      throw new ApiError(403, 'forbidden', 'Please verify your email first');
-    }
+    if (!user.emailConfirmed) throw new ApiError(403, 'forbidden', 'Please verify your email first');
 
     const body = await req.json().catch(() => null);
     const parsed = schema.safeParse(body);
@@ -68,7 +73,7 @@ Deno.serve(async (req) => {
         prompt: input.prompt,
         style: input.style,
         aspect_ratio: input.aspectRatio,
-        status: 'running',
+        status: 'processing',
         provider: 'huggingface',
         model: MODEL,
       })
@@ -90,57 +95,23 @@ Deno.serve(async (req) => {
       retryOnLoading: true,
     });
 
-    const mediaId = crypto.randomUUID();
-    const ext = mimeType.includes('jpeg') ? 'jpg' : mimeType.includes('webp') ? 'webp' : 'png';
-    const storagePath = `${user.id}/${mediaId}.${ext}`;
-
-    const { error: uploadErr } = await admin.storage
-      .from('media-photos')
-      .upload(storagePath, bytes, { contentType: mimeType, upsert: false });
-    if (uploadErr) throw new ApiError(500, 'unknown', `Storage upload failed: ${uploadErr.message}`);
-
-    const { error: insertErr } = await admin.from('media').insert({
-      id: mediaId,
-      user_id: user.id,
-      kind: 'photo',
-      prompt: input.prompt,
-      style: input.style,
-      aspect_ratio: input.aspectRatio,
-      storage_path: storagePath,
-      storage_bucket: 'media-photos',
-      mime_type: mimeType,
-      size_bytes: bytes.byteLength,
-      width: dims.width,
-      height: dims.height,
-      generation_log_id: logId,
-    });
-    if (insertErr) throw new ApiError(500, 'unknown', `Media insert failed: ${insertErr.message}`);
-
     await admin
       .from('generation_logs')
       .update({
-        status: 'succeeded',
+        status: 'completed',
         duration_ms: Date.now() - startedAt,
         finished_at: new Date().toISOString(),
         http_status: 200,
       })
       .eq('id', logId);
 
-    const { data: signed, error: signErr } = await admin.storage
-      .from('media-photos')
-      .createSignedUrl(storagePath, 3600);
-    if (signErr || !signed) throw new ApiError(500, 'unknown', 'Could not sign URL');
-
-    maybeSendFirstCreation(user.id, user.email).catch((err) => {
-      console.warn('First-creation email failed:', err);
-    });
-
     return jsonResponse({
-      mediaId,
-      signedUrl: signed.signedUrl,
-      storagePath,
-      mimeType,
-      sizeBytes: bytes.byteLength,
+      sourceImageBase64: bytesToBase64(bytes),
+      sourceMimeType: mimeType,
+      generationLogId: logId,
+      aspectRatio: input.aspectRatio,
+      width: dims.width,
+      height: dims.height,
     });
   } catch (err) {
     if (logId) {
@@ -158,19 +129,3 @@ Deno.serve(async (req) => {
     return errorResponse(err);
   }
 });
-
-async function maybeSendFirstCreation(userId: string, email: string): Promise<void> {
-  const admin = adminClient();
-  const { data: profile } = await admin
-    .from('profiles')
-    .select('display_name, first_creation_emailed_at')
-    .eq('id', userId)
-    .single();
-  if (!profile || profile.first_creation_emailed_at) return;
-  await sendFirstCreation(email, profile.display_name || email.split('@')[0] || 'there');
-  await admin
-    .from('profiles')
-    .update({ first_creation_emailed_at: new Date().toISOString() })
-    .eq('id', userId)
-    .is('first_creation_emailed_at', null);
-}

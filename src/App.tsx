@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes';
 import { LandingPage } from '@/features/landing/LandingPage';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { SignupPage } from '@/features/auth/pages/SignupPage';
@@ -17,9 +18,9 @@ import { RedirectIfAuthenticated } from '@/features/auth/RequireVerifiedAuth';
 export function App(): JSX.Element {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      <Route path={ROUTES.HOME} element={<LandingPage />} />
       <Route
-        path="/signup"
+        path={ROUTES.SIGNUP}
         element={
           <RedirectIfAuthenticated>
             <SignupPage />
@@ -27,24 +28,25 @@ export function App(): JSX.Element {
         }
       />
       <Route
-        path="/login"
+        path={ROUTES.LOGIN}
         element={
           <RedirectIfAuthenticated>
             <LoginPage />
           </RedirectIfAuthenticated>
         }
       />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/reset-password" element={<ResetPasswordPage />} />
-      <Route path="/verify-email-pending" element={<VerifyEmailPendingPage />} />
+      <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+      <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
+      <Route path={ROUTES.VERIFY_EMAIL_PENDING} element={<VerifyEmailPendingPage />} />
+      <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyCallbackPage />} />
       <Route path="/auth/verify" element={<VerifyCallbackPage />} />
       <Route path="/auth/reset-callback" element={<VerifyCallbackPage />} />
 
       <Route element={<AuthLayout />}>
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/dashboard/create" element={<CreatePage />} />
-        <Route path="/dashboard/library" element={<LibraryPage />} />
-        <Route path="/dashboard/profile" element={<ProfilePage />} />
+        <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+        <Route path={ROUTES.DASHBOARD_CREATE} element={<CreatePage />} />
+        <Route path={ROUTES.DASHBOARD_LIBRARY} element={<LibraryPage />} />
+        <Route path={ROUTES.DASHBOARD_PROFILE} element={<ProfilePage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

@@ -9,6 +9,7 @@ import { useLibrary, useMediaCounts, useDeleteMedia } from './useLibrary';
 import { MediaCard, MediaSkeleton } from './MediaCard';
 import type { MediaListItem } from '@/types/api';
 import type { LibraryFilter, LibrarySort } from './api';
+import { ROUTES } from '@/constants/routes';
 
 export function LibraryPage(): JSX.Element {
   const [filter, setFilter] = useState<LibraryFilter>('all');
@@ -54,7 +55,7 @@ export function LibraryPage(): JSX.Element {
           <img src="/empty-orb.svg" alt="" width={96} height={96} className="empty-orb" />
           <div className="empty-title">Your library is empty</div>
           <div className="empty-text">Generate your first photo or video to fill it up.</div>
-          <Link to="/dashboard/create?type=photo">
+          <Link to={`${ROUTES.DASHBOARD_CREATE}?type=photo`}>
             <Button variant="primary" leftIcon={<Sparkles size={16} />}>
               Start creating
             </Button>

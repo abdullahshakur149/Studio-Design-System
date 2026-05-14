@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/Input';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { resetPasswordSchema, type ResetPasswordInput } from '../schemas';
 import { setNewPassword } from '../api';
+import { ROUTES } from '@/constants/routes';
+import { SeoMeta } from '@/components/SeoMeta';
 
 export function ResetPasswordPage(): JSX.Element {
   const navigate = useNavigate();
@@ -33,7 +35,7 @@ export function ResetPasswordPage(): JSX.Element {
     try {
       await setNewPassword(parsed.data);
       toast.success('Password updated — please sign in');
-      navigate('/login', { replace: true });
+      navigate(ROUTES.LOGIN, { replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Could not update password');
     } finally {
@@ -43,6 +45,7 @@ export function ResetPasswordPage(): JSX.Element {
 
   return (
     <div className="auth-page">
+      <SeoMeta title="Reset password — Studio" noIndex />
       <form className="auth-card" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="auth-brand">
           <Wordmark size={22} />

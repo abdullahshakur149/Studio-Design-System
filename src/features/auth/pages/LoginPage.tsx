@@ -9,6 +9,8 @@ import { Checkbox } from '@/components/ui/Checkbox';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { loginSchema, type LoginInput } from '../schemas';
 import { login, LoginError } from '../api';
+import { ROUTES } from '@/constants/routes';
+import { SeoMeta } from '@/components/SeoMeta';
 
 interface LocationState {
   from?: { pathname: string };
@@ -18,7 +20,7 @@ export function LoginPage(): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
   const fromState = location.state as LocationState | null;
-  const redirectTo = fromState?.from?.pathname ?? '/dashboard';
+  const redirectTo = fromState?.from?.pathname ?? ROUTES.DASHBOARD;
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -58,6 +60,11 @@ export function LoginPage(): JSX.Element {
 
   return (
     <div className="auth-page">
+      <SeoMeta
+        title="Sign In Studio"
+        description="Sign in to your Studio account to create AI photos and videos from text prompts."
+        canonicalPath={ROUTES.LOGIN}
+      />
       <form className="auth-card" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="auth-brand">
           <Wordmark size={22} />
@@ -91,14 +98,14 @@ export function LoginPage(): JSX.Element {
                 <Checkbox label="Remember me for 30 days" checked={field.value} onChange={field.onChange} />
               )}
             />
-            <Link to="/forgot-password">Forgot password?</Link>
+            <Link to={ROUTES.FORGOT_PASSWORD}>Forgot password?</Link>
           </div>
         </div>
         <Button type="submit" variant="primary" style={{ width: '100%' }} loading={submitting}>
           Sign in
         </Button>
         <div className="auth-foot">
-          New to Studio? <Link to="/signup">Create an account</Link>
+          New to Studio? <Link to={ROUTES.SIGNUP}>Create an account</Link>
         </div>
       </form>
     </div>

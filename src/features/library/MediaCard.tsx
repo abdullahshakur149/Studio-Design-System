@@ -4,6 +4,7 @@ import { Download, MoreVertical, Copy, Trash2, Play } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/Badge';
 import type { MediaListItem } from '@/types/api';
+import { studioFilename } from '@/features/generate/filename';
 
 function truncate(s: string, n: number): string {
   return s.length <= n ? s : s.slice(0, n - 1).trim() + '…';
@@ -41,7 +42,7 @@ export function MediaCard({ item, onDelete }: MediaCardProps): JSX.Element {
       const a = document.createElement('a');
       a.href = url;
       const ext = item.mimeType.split('/')[1] ?? (isVideo ? 'mp4' : 'png');
-      a.download = `studio-${item.id}.${ext}`;
+      a.download = studioFilename(isVideo ? 'video' : 'photo', ext);
       document.body.appendChild(a);
       a.click();
       a.remove();

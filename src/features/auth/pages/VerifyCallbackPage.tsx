@@ -5,6 +5,8 @@ import { supabase, setRememberMe } from '@/lib/supabase';
 import { FullPageSpinner } from '@/components/FullPageSpinner';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { Button } from '@/components/ui/Button';
+import { ROUTES } from '@/constants/routes';
+import { SeoMeta } from '@/components/SeoMeta';
 
 type Status = 'verifying' | 'success' | 'error';
 
@@ -76,20 +78,21 @@ export function VerifyCallbackPage(): JSX.Element {
   if (status === 'success') {
     const type = searchParams.get('type');
     if (type === 'recovery') {
-      return <Navigate to="/reset-password" replace />;
+      return <Navigate to={ROUTES.RESET_PASSWORD} replace />;
     }
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 
   return (
     <div className="auth-page">
+      <SeoMeta title="Verify email — Studio" noIndex />
       <div className="auth-card">
         <div className="auth-brand">
           <Wordmark size={22} />
         </div>
         <h2 className="auth-title">Verification failed</h2>
         <p className="auth-sub">{errorMessage || 'The link is invalid or has expired.'}</p>
-        <Button variant="primary" style={{ width: '100%' }} onClick={() => (window.location.href = '/login')}>
+        <Button variant="primary" style={{ width: '100%' }} onClick={() => (window.location.href = ROUTES.LOGIN)}>
           Back to sign in
         </Button>
       </div>

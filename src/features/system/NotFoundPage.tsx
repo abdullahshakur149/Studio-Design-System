@@ -1,10 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
+import { ROUTES } from '@/constants/routes';
+import { SeoMeta } from '@/components/SeoMeta';
 
 export function NotFoundPage(): JSX.Element {
   const navigate = useNavigate();
   return (
     <div className="auth-page">
+      <SeoMeta title="Page not found — Studio" noIndex />
       <div style={{ textAlign: 'center', maxWidth: 420 }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
           <img src="/empty-orb.svg" alt="" width={120} height={120} />
@@ -24,7 +27,7 @@ export function NotFoundPage(): JSX.Element {
         <p style={{ color: 'var(--text-secondary)', margin: '0 0 24px' }}>
           The link you followed may be broken, or the page may have been removed.
         </p>
-        <Button variant="primary" onClick={() => navigate('/dashboard')}>
+        <Button variant="primary" onClick={() => navigate(ROUTES.DASHBOARD)}>
           Back to dashboard
         </Button>
       </div>

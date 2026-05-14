@@ -4,6 +4,7 @@ import { LogOut, User } from 'lucide-react';
 import { useSession } from '@/features/auth/useSession';
 import { logout } from '@/features/auth/api';
 import { Wordmark } from './ui/Wordmark';
+import { ROUTES } from '@/constants/routes';
 
 function getInitials(email: string, displayName?: string | null): string {
   if (displayName && displayName.trim().length > 0) {
@@ -26,19 +27,19 @@ export function Nav(): JSX.Element {
 
   async function handleLogout(): Promise<void> {
     await logout();
-    navigate('/login', { replace: true });
+    navigate(ROUTES.HOME, { replace: true });
   }
 
   const links = [
-    { to: '/dashboard', label: 'Dashboard', match: (p: string) => p === '/dashboard' },
-    { to: '/dashboard/create', label: 'Create', match: (p: string) => p.startsWith('/dashboard/create') },
-    { to: '/dashboard/library', label: 'My Library', match: (p: string) => p.startsWith('/dashboard/library') },
+    { to: ROUTES.DASHBOARD, label: 'Dashboard', match: (p: string) => p === ROUTES.DASHBOARD },
+    { to: ROUTES.DASHBOARD_CREATE, label: 'Create', match: (p: string) => p.startsWith(ROUTES.DASHBOARD_CREATE) },
+    { to: ROUTES.DASHBOARD_LIBRARY, label: 'My Library', match: (p: string) => p.startsWith(ROUTES.DASHBOARD_LIBRARY) },
   ];
 
   return (
     <header className="nav">
       <div className="nav-inner">
-        <Link to="/dashboard" className="nav-brand" style={{ textDecoration: 'none' }}>
+        <Link to={ROUTES.DASHBOARD} className="nav-brand" style={{ textDecoration: 'none' }}>
           <Wordmark size={22} />
         </Link>
         <nav className="nav-links">
@@ -66,7 +67,7 @@ export function Nav(): JSX.Element {
                 <div className="nav-menu-email">{email}</div>
               </div>
               <DropdownMenu.Item asChild>
-                <Link className="nav-menu-item" to="/dashboard/profile">
+                <Link className="nav-menu-item" to={ROUTES.DASHBOARD_PROFILE}>
                   <User size={14} /> Profile
                 </Link>
               </DropdownMenu.Item>

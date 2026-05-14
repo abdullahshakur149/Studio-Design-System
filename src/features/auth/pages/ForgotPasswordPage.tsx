@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/Input';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { forgotPasswordSchema, type ForgotPasswordInput } from '../schemas';
 import { requestPasswordReset } from '../api';
+import { ROUTES } from '@/constants/routes';
+import { SeoMeta } from '@/components/SeoMeta';
 
 export function ForgotPasswordPage(): JSX.Element {
   const [sent, setSent] = useState<string | null>(null);
@@ -39,6 +41,7 @@ export function ForgotPasswordPage(): JSX.Element {
   if (sent) {
     return (
       <div className="auth-page">
+        <SeoMeta title="Check your email — Studio" noIndex />
         <div className="auth-card">
           <div className="auth-brand">
             <Wordmark size={22} />
@@ -64,7 +67,7 @@ export function ForgotPasswordPage(): JSX.Element {
           <p className="auth-sub">
             We sent a reset link to <span style={{ color: 'var(--text-primary)' }}>{sent}</span>.
           </p>
-          <Link to="/login" style={{ display: 'block' }}>
+          <Link to={ROUTES.LOGIN} style={{ display: 'block' }}>
             <Button variant="secondary" style={{ width: '100%' }}>
               Back to sign in
             </Button>
@@ -88,6 +91,7 @@ export function ForgotPasswordPage(): JSX.Element {
 
   return (
     <div className="auth-page">
+      <SeoMeta title="Forgot password — Studio" noIndex />
       <form className="auth-card" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="auth-brand">
           <Wordmark size={22} />
@@ -109,7 +113,7 @@ export function ForgotPasswordPage(): JSX.Element {
           Send reset link
         </Button>
         <div className="auth-foot">
-          <Link to="/login">← Back to sign in</Link>
+          <Link to={ROUTES.LOGIN}>← Back to sign in</Link>
         </div>
       </form>
     </div>

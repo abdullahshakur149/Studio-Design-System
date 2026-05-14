@@ -29,12 +29,13 @@ export interface GenerateVideoRequest {
   sourceImagePath?: string;
 }
 
-export interface GenerateResponse {
-  mediaId: string;
-  signedUrl: string;
-  storagePath: string;
-  mimeType: string;
-  sizeBytes: number;
+export interface GeneratePhotoResponse {
+  sourceImageBase64: string;
+  sourceMimeType: string;
+  generationLogId: string;
+  aspectRatio: PhotoAspectRatio;
+  width: number;
+  height: number;
 }
 
 export interface GenerateVideoResponse {

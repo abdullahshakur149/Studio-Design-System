@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import { logout } from '@/features/auth/api';
+import { ROUTES } from '@/constants/routes';
 import { getProfile, updateDisplayName, deleteAccount, type ProfileData } from './api';
 
 function formatDateLong(iso: string): string {
@@ -42,7 +43,7 @@ export function ProfilePage(): JSX.Element {
     onSuccess: async () => {
       await logout();
       toast.success('Account deleted');
-      navigate('/', { replace: true });
+      navigate(ROUTES.HOME, { replace: true });
     },
     onError: (err) => toast.error(err instanceof Error ? err.message : 'Could not delete account'),
   });

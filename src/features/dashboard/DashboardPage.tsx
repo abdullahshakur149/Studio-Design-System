@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge';
 import { MediaCard, MediaSkeleton } from '@/features/library/MediaCard';
 import { getDashboardStats, getRecentMedia } from './api';
 import type { DashboardStats, MediaListItem } from '@/types/api';
+import { ROUTES } from '@/constants/routes';
 
 function formatStorage(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
@@ -111,7 +112,7 @@ export function DashboardPage(): JSX.Element {
           </div>
           <p className="create-card-desc">Create an image from a text prompt.</p>
           <div className="create-card-foot">
-            <Link to="/dashboard/create?type=photo">
+            <Link to={`${ROUTES.DASHBOARD_CREATE}?type=photo`}>
               <Button variant="primary" size="sm" rightIcon={<ArrowRight size={14} />}>
                 Create
               </Button>
@@ -127,7 +128,7 @@ export function DashboardPage(): JSX.Element {
           </div>
           <p className="create-card-desc">Create a short video from a prompt or image.</p>
           <div className="create-card-foot">
-            <Link to="/dashboard/create?type=video">
+            <Link to={`${ROUTES.DASHBOARD_CREATE}?type=video`}>
               <Button variant="primary" size="sm" rightIcon={<ArrowRight size={14} />}>
                 Create
               </Button>
@@ -139,7 +140,7 @@ export function DashboardPage(): JSX.Element {
       <div className="section-head">
         <h2 className="section-h">Recent creations</h2>
         {!showEmptyState && (
-          <Link to="/dashboard/library" className="section-link">
+          <Link to={ROUTES.DASHBOARD_LIBRARY} className="section-link">
             View all <ChevronRight size={14} />
           </Link>
         )}

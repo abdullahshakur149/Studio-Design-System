@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
         prompt: input.prompt,
         style: input.style,
         motion: input.motion,
-        status: 'running',
+        status: 'processing',
         provider: 'huggingface',
         model: MODEL,
       })
@@ -88,7 +88,7 @@ Deno.serve(async (req) => {
     await admin
       .from('generation_logs')
       .update({
-        status: 'succeeded',
+        status: 'completed',
         duration_ms: Date.now() - startedAt,
         finished_at: new Date().toISOString(),
         http_status: 200,

@@ -174,13 +174,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_dashboard_stats: {
+        Args: never
+        Returns: {
+          display_name: string
+          member_since: string
+          plan: string
+          storage_bytes: number
+          total_photos: number
+          total_videos: number
+        }[]
+      }
     }
     Enums: {
       generation_status:
         | "queued"
-        | "running"
-        | "succeeded"
+        | "processing"
+        | "completed"
         | "failed"
         | "timeout"
       media_kind: "photo" | "video"
@@ -313,8 +323,8 @@ export const Constants = {
     Enums: {
       generation_status: [
         "queued",
-        "running",
-        "succeeded",
+        "processing",
+        "completed",
         "failed",
         "timeout",
       ],

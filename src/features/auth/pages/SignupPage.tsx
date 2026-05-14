@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/Input';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { signupSchema, type SignupInput } from '../schemas';
 import { signUp } from '../api';
+import { ROUTES } from '@/constants/routes';
+import { SeoMeta } from '@/components/SeoMeta';
 
 export function SignupPage(): JSX.Element {
   const navigate = useNavigate();
@@ -34,7 +36,7 @@ export function SignupPage(): JSX.Element {
     try {
       await signUp(parsed.data);
       toast.success('Account created — check your inbox to verify');
-      navigate('/verify-email-pending', { state: { email: parsed.data.email } });
+      navigate(ROUTES.VERIFY_EMAIL_PENDING, { state: { email: parsed.data.email } });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Sign up failed';
       if (message.toLowerCase().includes('already exists')) {
@@ -49,6 +51,11 @@ export function SignupPage(): JSX.Element {
 
   return (
     <div className="auth-page">
+      <SeoMeta
+        title="Create Account Studio"
+        description="Create a free Studio account in seconds and start generating AI photos and videos from text prompts."
+        canonicalPath={ROUTES.SIGNUP}
+      />
       <form className="auth-card" onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="auth-brand">
           <Wordmark size={22} />
@@ -83,7 +90,7 @@ export function SignupPage(): JSX.Element {
           Create account
         </Button>
         <div className="auth-foot">
-          Already have an account? <Link to="/login">Sign in</Link>
+          Already have an account? <Link to={ROUTES.LOGIN}>Sign in</Link>
         </div>
       </form>
     </div>

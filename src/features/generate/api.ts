@@ -3,12 +3,12 @@ import { callFunction } from '@/lib/api';
 import type {
   GeneratePhotoRequest,
   GenerateVideoRequest,
-  GenerateResponse,
+  GeneratePhotoResponse,
   GenerateVideoResponse,
 } from '@/types/api';
 
-export async function generatePhoto(input: GeneratePhotoRequest): Promise<GenerateResponse> {
-  return callFunction<GenerateResponse>('generate-photo', { method: 'POST', body: input });
+export async function generatePhoto(input: GeneratePhotoRequest): Promise<GeneratePhotoResponse> {
+  return callFunction<GeneratePhotoResponse>('generate-photo', { method: 'POST', body: input });
 }
 
 export async function generateVideo(input: GenerateVideoRequest): Promise<GenerateVideoResponse> {

@@ -54,9 +54,8 @@ Node.js is the engine that runs the website on your computer.
 
 To check it worked, open the **Terminal** app (on a Mac: press Cmd+Space, type "Terminal", press Enter; on Windows: press the Windows key, type "Command Prompt", press Enter). Type this and press Enter:
 
-```bash
+bash
 node -v
-```
 
 You should see something like `v20.19.6`. If you do, great. If you don't, try restarting your computer and trying again.
 
@@ -64,25 +63,25 @@ You should see something like `v20.19.6`. If you do, great. If you don't, try re
 
 Still in the Terminal, type:
 
-```bash
+bash
 git clone <paste-this-repository-url-here>
-```
+
 
 This downloads the project to a folder on your computer.
 
 Then move into that folder:
 
-```bash
+bash
 cd Studio-Design-System
-```
+
 
 ### Step 3: Install all the supporting pieces
 
 This downloads the extra code the project needs to run.
 
-```bash
+bash
 npm install
-```
+
 
 This takes about a minute. You might see some yellow warnings — those are fine, ignore them.
 
@@ -90,9 +89,9 @@ This takes about a minute. You might see some yellow warnings — those are fine
 
 The app needs a few "keys" (like secret passwords) to talk to the services it relies on. Copy the example file:
 
-```bash
+bash
 cp .env.example .env.local
-```
+
 
 Then open `.env.local` in a text editor (any will do — Notepad on Windows, TextEdit on Mac, or VS Code if you have it). You'll see lines like `VITE_SUPABASE_URL=` waiting to be filled in. We'll fill them in over the next two sections.
 
@@ -106,9 +105,9 @@ Follow the **How To Get Your API Keys** section to sign up for the services Stud
 
 ### Step 7: Start the app
 
-```bash
+bash
 npm run dev
-```
+
 
 Open your web browser and go to **http://localhost:5173**. Studio should appear.
 
@@ -118,12 +117,12 @@ When you want to stop the app, go back to the Terminal and press `Ctrl+C`.
 
 Studio uses a free service called **Supabase** to remember your account and store your pictures.
 
-1. Go to **https://supabase.com/** and sign up (it's free)
+1. Go to https://supabase.com/ and sign up (it's free)
 2. Click **New project**
 3. Give it any name you like (`studio` is fine)
 4. Pick the region closest to where you live
 5. Set a strong password — **save this in a safe place**, you'll never need to retype it
-6. Click **Create**. Wait about a minute while Supabase prepares your project
+6. Click Create. Wait about a minute while Supabase prepares your project
 
 ### Run the database setup script
 
@@ -139,7 +138,7 @@ This step creates the tables and security rules the app needs.
 ### Find your project keys
 
 1. In Supabase, click the gear icon (Project Settings) in the sidebar
-2. Click **API**
+2. Click API
 3. You'll see three things to copy into your `.env.local` file on your computer:
    - **Project URL** → paste into `VITE_SUPABASE_URL=`
    - **anon public** key → paste into `VITE_SUPABASE_ANON_KEY=`
@@ -267,10 +266,6 @@ To make signup actually work for any user, Studio sends emails through Mailjet i
 
 ### File size limits
 
-- Reference images (if you use one for video generation): **5 MB maximum**, must be a JPG, PNG, or WEBP file.
+- Reference images (if you use one for video generation): 5 MB maximum, must be a JPG, PNG, or WEBP file.
 - Generated pictures: usually 1–3 MB each.
 - Generated videos: usually 1–5 MB each.
-
-### Picture and video quality
-
-The free AI service we use makes good pictures, but they're not as photorealistic as the most expensive paid services like Midjourney or Adobe Firefly. They're great for casual or creative use, less great if you need professional photoshoot quality.

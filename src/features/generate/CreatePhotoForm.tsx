@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Sparkles, RotateCw, AlertCircle, Download, Library as LibraryIcon } from 'lucide-react';
+import { Sparkles, RotateCw, AlertCircle, Download, Library as LibraryIcon, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { Textarea } from '@/components/ui/Input';
 import { ApiError } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 import type { PhotoFormValues } from './schemas';
-import { PHOTO_STYLES, PHOTO_ASPECT_RATIOS, type GenerateResponse } from '@/types/api';
+import { PHOTO_STYLES, PHOTO_ASPECT_RATIOS, type GeneratePhotoResponse } from '@/types/api';
 import { generatePhoto } from './api';
+import { studioFilename } from './filename';
 
 const RATIO_LABELS: Record<(typeof PHOTO_ASPECT_RATIOS)[number], { label: string; w: number; h: number }> = {
   '1:1': { label: 'Square 1:1', w: 28, h: 28 },
@@ -20,12 +22,20 @@ const RATIO_LABELS: Record<(typeof PHOTO_ASPECT_RATIOS)[number], { label: string
 type ResultState =
   | { kind: 'idle' }
   | { kind: 'loading' }
-  | { kind: 'done'; data: GenerateResponse; aspect: string }
+  | { kind: 'done'; data: GeneratePhotoResponse; dataUrl: string; saved: boolean; savedMediaId?: string }
   | { kind: 'error'; message: string; warming?: boolean };
+
+function base64ToBlob(base64: string, mimeType: string): Blob {
+  const byteChars = atob(base64);
+  const byteNumbers = new Array(byteChars.length);
+  for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+  return new Blob([new Uint8Array(byteNumbers)], { type: mimeType });
+}
 
 export function CreatePhotoForm(): JSX.Element {
   const queryClient = useQueryClient();
   const [result, setResult] = useState<ResultState>({ kind: 'idle' });
+  const [saving, setSaving] = useState(false);
 
   const {
     register,
@@ -39,19 +49,16 @@ export function CreatePhotoForm(): JSX.Element {
   });
 
   const prompt = watch('prompt') ?? '';
+  const formValues = watch();
 
   const mutation = useMutation({
     mutationFn: generatePhoto,
     onMutate: () => setResult({ kind: 'loading' }),
-    onSuccess: (data, vars) => {
-      setResult({ kind: 'done', data, aspect: vars.aspectRatio });
-      queryClient.invalidateQueries({ queryKey: ['library'] });
-      queryClient.invalidateQueries({ queryKey: ['mediaCounts'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
-      queryClient.invalidateQueries({ queryKey: ['recentMedia'] });
-      toast.success('Photo generated and saved to your library');
+    onSuccess: (data) => {
+      const dataUrl = `data:${data.sourceMimeType};base64,${data.sourceImageBase64}`;
+      setResult({ kind: 'done', data, dataUrl, saved: false });
     },
-    onError: async (err) => {
+    onError: (err) => {
       let message = 'Generation failed. Please try again.';
       let warming = false;
       if (err instanceof ApiError) {
@@ -79,18 +86,73 @@ export function CreatePhotoForm(): JSX.Element {
   async function handleDownload(): Promise<void> {
     if (result.kind !== 'done') return;
     try {
-      const res = await fetch(result.data.signedUrl);
-      const blob = await res.blob();
+      const blob = base64ToBlob(result.data.sourceImageBase64, result.data.sourceMimeType);
+      const ext = result.data.sourceMimeType.includes('jpeg')
+        ? 'jpg'
+        : result.data.sourceMimeType.includes('webp')
+          ? 'webp'
+          : 'png';
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `studio-${result.data.mediaId}.png`;
+      a.download = studioFilename('photo', ext);
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
     } catch {
       toast.error('Download failed');
+    }
+  }
+
+  async function handleSaveToLibrary(): Promise<void> {
+    if (result.kind !== 'done' || result.saved) return;
+    setSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const blob = base64ToBlob(result.data.sourceImageBase64, result.data.sourceMimeType);
+      const ext = result.data.sourceMimeType.includes('jpeg')
+        ? 'jpg'
+        : result.data.sourceMimeType.includes('webp')
+          ? 'webp'
+          : 'png';
+      const mediaId = crypto.randomUUID();
+      const storagePath = `${user.id}/${mediaId}.${ext}`;
+
+      const { error: upErr } = await supabase.storage
+        .from('media-photos')
+        .upload(storagePath, blob, { contentType: result.data.sourceMimeType, upsert: false });
+      if (upErr) throw new Error(upErr.message);
+
+      const { error: insertErr } = await supabase.from('media').insert({
+        id: mediaId,
+        user_id: user.id,
+        kind: 'photo',
+        prompt: formValues.prompt,
+        style: formValues.style,
+        aspect_ratio: formValues.aspectRatio,
+        storage_path: storagePath,
+        storage_bucket: 'media-photos',
+        mime_type: result.data.sourceMimeType,
+        size_bytes: blob.size,
+        width: result.data.width,
+        height: result.data.height,
+        generation_log_id: result.data.generationLogId,
+      });
+      if (insertErr) throw new Error(insertErr.message);
+
+      setResult({ ...result, saved: true, savedMediaId: mediaId });
+      toast.success('Saved to library');
+      queryClient.invalidateQueries({ queryKey: ['library'] });
+      queryClient.invalidateQueries({ queryKey: ['mediaCounts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardStats'] });
+      queryClient.invalidateQueries({ queryKey: ['recentMedia'] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not save');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -185,12 +247,12 @@ export function CreatePhotoForm(): JSX.Element {
           )}
           {result.kind === 'done' && (
             <img
-              src={result.data.signedUrl}
+              src={result.dataUrl}
               alt="Generated"
               style={{
                 maxWidth: '90%',
                 maxHeight: '90%',
-                aspectRatio: result.aspect.replace(':', '/'),
+                aspectRatio: result.data.aspectRatio.replace(':', '/'),
                 objectFit: 'contain',
               }}
             />
@@ -233,8 +295,15 @@ export function CreatePhotoForm(): JSX.Element {
             <Button type="button" variant="secondary" leftIcon={<Download size={14} />} onClick={handleDownload}>
               Download
             </Button>
-            <Button type="button" variant="secondary" leftIcon={<LibraryIcon size={14} />} disabled>
-              Saved to library
+            <Button
+              type="button"
+              variant={result.saved ? 'secondary' : 'primary'}
+              leftIcon={result.saved ? <Check size={14} /> : <LibraryIcon size={14} />}
+              loading={saving}
+              disabled={result.saved}
+              onClick={handleSaveToLibrary}
+            >
+              {result.saved ? 'Saved to library' : 'Save to library'}
             </Button>
             <Button
               type="button"
@@ -250,4 +319,3 @@ export function CreatePhotoForm(): JSX.Element {
     </form>
   );
 }
-

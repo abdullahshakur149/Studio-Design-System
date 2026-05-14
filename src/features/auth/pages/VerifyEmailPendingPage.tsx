@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/Button';
 import { Wordmark } from '@/components/ui/Wordmark';
 import { useSession } from '../useSession';
 import { resendVerificationEmail, logout } from '../api';
+import { ROUTES } from '@/constants/routes';
+import { SeoMeta } from '@/components/SeoMeta';
 
 interface LocationState {
   email?: string;
@@ -40,6 +42,7 @@ export function VerifyEmailPendingPage(): JSX.Element {
 
   return (
     <div className="auth-page">
+      <SeoMeta title="Verify your email — Studio" noIndex />
       <div className="auth-card">
         <div className="auth-brand">
           <Wordmark size={22} />
@@ -73,7 +76,7 @@ export function VerifyEmailPendingPage(): JSX.Element {
           Sign out
         </Button>
         <div className="auth-foot">
-          Wrong email? <Link to="/signup">Use a different one</Link>
+          Wrong email? <Link to={ROUTES.SIGNUP}>Use a different one</Link>
         </div>
       </div>
     </div>

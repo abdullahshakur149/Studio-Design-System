@@ -16,6 +16,7 @@ import {
 import { VIDEO_STYLES, VIDEO_MOTIONS, type GenerateVideoResponse } from '@/types/api';
 import { generateVideo, uploadSourceImage, type UploadedSource } from './api';
 import { composeKenBurnsVideo, imageFromBase64 } from './kenBurns';
+import { studioFilename } from './filename';
 
 type UploadState =
   | { kind: 'empty' }
@@ -246,7 +247,7 @@ export function CreateVideoForm(): JSX.Element {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `studio-${result.mediaId}.${ext}`;
+      a.download = studioFilename('video', ext);
       document.body.appendChild(a);
       a.click();
       a.remove();

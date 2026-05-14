@@ -1,6 +1,7 @@
 import { supabase, setRememberMe } from '@/lib/supabase';
 import { callFunction, ApiError } from '@/lib/api';
 import { env } from '@/lib/env';
+import { ROUTES } from '@/constants/routes';
 import type { LoginInput, SignupInput, ForgotPasswordInput, ResetPasswordInput } from './schemas';
 
 export interface CheckEmailResponse {
@@ -24,7 +25,7 @@ export async function signUp(input: SignupInput): Promise<SignupResult> {
     email: input.email,
     password: input.password,
     options: {
-      emailRedirectTo: `${env.VITE_SITE_URL}/auth/verify`,
+      emailRedirectTo: `${env.VITE_SITE_URL}${ROUTES.VERIFY_EMAIL}`,
     },
   });
   if (error) {
@@ -82,7 +83,7 @@ export async function logout(): Promise<void> {
 
 export async function requestPasswordReset(input: ForgotPasswordInput): Promise<void> {
   const { error } = await supabase.auth.resetPasswordForEmail(input.email, {
-    redirectTo: `${env.VITE_SITE_URL}/auth/reset-callback`,
+    redirectTo: `${env.VITE_SITE_URL}${ROUTES.RESET_PASSWORD}`,
   });
   if (error) throw new Error(error.message);
 }
@@ -96,7 +97,7 @@ export async function resendVerificationEmail(email: string): Promise<void> {
   const { error } = await supabase.auth.resend({
     type: 'signup',
     email,
-    options: { emailRedirectTo: `${env.VITE_SITE_URL}/auth/verify` },
+    options: { emailRedirectTo: `${env.VITE_SITE_URL}${ROUTES.VERIFY_EMAIL}` },
   });
   if (error) throw new Error(error.message);
 }

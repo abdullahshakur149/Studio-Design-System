@@ -2,21 +2,28 @@ import { Link } from 'react-router-dom';
 import { Image as ImageIcon, Video, Library, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Wordmark } from '@/components/ui/Wordmark';
+import { SeoMeta } from '@/components/SeoMeta';
+import { ROUTES } from '@/constants/routes';
 
 export function LandingPage(): JSX.Element {
   return (
     <div className="landing">
+      <SeoMeta
+        title="Studio, Create AI Videos and Photos Free"
+        description="Studio is a free AI media studio. Type a sentence and get an AI-made picture or short video. No design skills, no subscription, no waiting."
+        canonicalPath={ROUTES.HOME}
+      />
       <header className="landing-nav">
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={ROUTES.HOME} style={{ textDecoration: 'none', color: 'inherit' }}>
           <Wordmark size={22} />
         </Link>
         <div className="landing-nav-actions">
-          <Link to="/login">
+          <Link to={ROUTES.LOGIN}>
             <Button variant="ghost" size="sm">
               Sign in
             </Button>
           </Link>
-          <Link to="/signup">
+          <Link to={ROUTES.SIGNUP}>
             <Button variant="primary" size="sm">
               Get started
             </Button>
@@ -37,12 +44,12 @@ export function LandingPage(): JSX.Element {
           want speed and clarity.
         </p>
         <div className="landing-cta">
-          <Link to="/signup">
+          <Link to={ROUTES.SIGNUP}>
             <Button variant="primary" size="lg" rightIcon={<ArrowRight size={16} />}>
               Get started
             </Button>
           </Link>
-          <Link to="/login">
+          <Link to={ROUTES.LOGIN}>
             <Button variant="ghost" size="lg">
               Sign in
             </Button>
