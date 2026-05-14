@@ -1,0 +1,177 @@
+/* ============================================================
+   STUDIO — DESIGN TOKENS
+   Dark-first. Linear meets Midjourney. Single accent (violet).
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ---------- COLOR ---------- */
+  /* Surfaces */
+  --bg:                #0A0A0B;   /* page background, near-black */
+  --surface:           #111113;   /* default card surface */
+  --surface-elevated:  #18181B;   /* hovered / elevated card, modal */
+  --surface-sunken:    #060607;   /* inset wells, code, dropzone empty */
+  --border:            #232327;   /* default 1px hairline */
+  --border-strong:     #2E2E33;   /* focus rings, hover borders */
+
+  /* Text */
+  --text-primary:      #F5F5F7;   /* headlines & body */
+  --text-secondary:    #A1A1AA;   /* labels, captions */
+  --text-muted:        #6B6B73;   /* hints, disabled labels, meta */
+  --text-on-accent:    #FFFFFF;
+
+  /* Accent — electric violet */
+  --accent:            #7C5CFF;
+  --accent-hover:      #6B4AFF;
+  --accent-pressed:    #5A3CFF;
+  --accent-soft:       rgba(124, 92, 255, 0.14);
+  --accent-ring:       rgba(124, 92, 255, 0.35);
+
+  /* Semantic */
+  --success:           #34D399;
+  --success-soft:      rgba(52, 211, 153, 0.14);
+  --warning:           #F5B544;
+  --warning-soft:      rgba(245, 181, 68, 0.14);
+  --error:             #F87171;
+  --error-soft:        rgba(248, 113, 113, 0.14);
+  --info:              #60A5FA;
+  --info-soft:         rgba(96, 165, 250, 0.14);
+
+  /* Overlays */
+  --scrim:             rgba(0, 0, 0, 0.6);
+  --shimmer:           linear-gradient(90deg,
+                          rgba(255,255,255,0) 0%,
+                          rgba(255,255,255,0.05) 50%,
+                          rgba(255,255,255,0) 100%);
+
+  /* ---------- TYPOGRAPHY ---------- */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Sizes */
+  --fs-display:  56px;   /* hero */
+  --fs-h1:       40px;
+  --fs-h2:       28px;
+  --fs-h3:       20px;
+  --fs-body:     15px;
+  --fs-small:    13px;
+  --fs-caption:  12px;
+
+  /* Line heights */
+  --lh-tight:    1.05;
+  --lh-snug:     1.2;
+  --lh-normal:   1.55;
+  --lh-loose:    1.7;
+
+  /* Weights */
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* Tracking */
+  --tr-tight:   -0.02em;
+  --tr-snug:    -0.01em;
+  --tr-normal:   0em;
+  --tr-wide:     0.04em;
+
+  /* ---------- SPACING ---------- */
+  --s-1:   4px;
+  --s-2:   8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-6:  24px;
+  --s-8:  32px;
+  --s-12: 48px;
+  --s-16: 64px;
+
+  /* ---------- RADIUS ---------- */
+  --r-sm:  4px;
+  --r-md:  8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-2xl: 24px;
+  --r-full: 9999px;
+
+  /* ---------- ELEVATION ---------- */
+  /* Studio favors 1px borders; shadows are quiet halos for modals only */
+  --shadow-pop:    0 1px 0 rgba(255,255,255,0.04) inset, 0 0 0 1px var(--border);
+  --shadow-lift:   0 1px 0 rgba(255,255,255,0.05) inset, 0 0 0 1px var(--border-strong);
+  --shadow-modal:  0 24px 48px -12px rgba(0,0,0,0.6), 0 0 0 1px var(--border-strong);
+  --shadow-toast:  0 12px 24px -8px rgba(0,0,0,0.5), 0 0 0 1px var(--border-strong);
+  --shadow-focus:  0 0 0 3px var(--accent-ring);
+
+  /* ---------- MOTION ---------- */
+  --ease-out:    cubic-bezier(0.2, 0, 0, 1);
+  --ease-inout:  cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:    120ms;
+  --dur-base:    180ms;
+  --dur-slow:    280ms;
+}
+
+/* ============================================================
+   SEMANTIC ELEMENT STYLES
+   ============================================================ */
+html, body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.display, h1.display {
+  font-size: var(--fs-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-tight);
+  font-weight: var(--fw-semibold);
+}
+
+h1 {
+  font-size: var(--fs-h1);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-tight);
+  font-weight: var(--fw-semibold);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-snug);
+  font-weight: var(--fw-semibold);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-snug);
+  font-weight: var(--fw-semibold);
+}
+
+p, .body { font-size: var(--fs-body); line-height: var(--lh-normal); color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted); }
+
+.small   { font-size: var(--fs-small);   line-height: 1.5; }
+.caption { font-size: var(--fs-caption); line-height: 1.4; color: var(--text-muted); letter-spacing: var(--tr-wide); text-transform: uppercase; }
+
+code, .mono { font-family: var(--font-mono); font-size: 0.92em; }
+
+::selection { background: var(--accent-soft); color: var(--text-primary); }
+
+/* shimmer keyframe for loaders / live progress */
+@keyframes studio-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg,
+    var(--surface) 0%,
+    var(--surface-elevated) 50%,
+    var(--surface) 100%);
+  background-size: 800px 100%;
+  animation: studio-shimmer 1.6s infinite linear;
+}
