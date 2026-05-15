@@ -237,7 +237,6 @@ Here's what happens, step by step, the first time you use Studio.
 | `supabase/functions/` | The "back office" code that runs on a server (not in your browser). It does things that need to stay secret, like talking to the AI service. |
 | `supabase/migrations/` | The recipe for setting up the database. |
 | `supabase/email-templates/` | The branded HTML emails Studio sends. |
-| `Claude Design/` | The original design mock-ups that were used to build the look and feel. Kept for reference. |
 | `public/` | Files like the logo that get served as-is. |
 
 ## Known Limitations
