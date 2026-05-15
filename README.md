@@ -253,7 +253,7 @@ It looks like a video, plays like a video, and downloads as a video file. It's j
 
 ### Emails go through Mailjet, not Resend
 
-The original requirements specified that emails should be sent through a service called Resend. Resend's free tier has a quirk: without paying for a domain, it only delivers emails to the one email address you used when signing up. That means a different person trying out the app wouldn't receive their verification email.
+ Resend's free tier has a quirk: without paying for a domain, it only delivers emails to the one email address you used when signing up. That means a different person trying out the app wouldn't receive their verification email.
 
 To make signup actually work for any user, Studio sends emails through Mailjet instead (the rest of the email setup — branded templates, verification, password reset — is identical). Mailjet's free tier doesn't have that "one inbox only" restriction.
 
